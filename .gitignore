@@ -1,0 +1,14 @@
+# Dependencies
+node_modules
+
+# Dotenv environment variable files
+.env
+
+# Local IDE config
+.vscode
+
+# TypeScript build output
+dist
+
+# MacOS directory metadata
+.DS_Store
