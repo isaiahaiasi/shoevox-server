@@ -2,7 +2,9 @@ import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
-import { env } from './config/env';
+import { getEnv } from './config/env';
+
+const env = getEnv();
 
 const app = express();
 
