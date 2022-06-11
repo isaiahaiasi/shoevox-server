@@ -2,14 +2,13 @@ import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
-import { env } from './config/env'
+import { env } from './config/env';
 
 const app = express();
 
 // TODO: Logging
 // TODO: Sanitization?
 // TODO: Error catching
-
 
 // Sets security HTTP Headers
 app.use(helmet());
