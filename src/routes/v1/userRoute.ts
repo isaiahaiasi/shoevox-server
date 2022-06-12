@@ -1,16 +1,17 @@
-import { getUsers } from '../../controllers/userController';
+import * as userController from '../../controllers/userController';
 import { routeBuilder, RouteData } from '../../utils/routeBuilder';
 
-const userRoutes: RouteData[] = [
+const userRoutes: RouteData<typeof userController>[] = [
   {
     path: '/',
     method: 'get',
-
-    // TODO: might replace with 'operationId',
-    // and use that to index into a singular UserControllers object
-    // for better integration with OpenAPI spec document.
-    requestHandler: getUsers,
+    operationId: 'getUsers',
+  },
+  {
+    path: '/:userid',
+    method: 'get',
+    operationId: 'getUserById',
   },
 ];
 
-export default routeBuilder(userRoutes);
+export default routeBuilder(userRoutes, userController);
