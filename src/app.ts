@@ -1,8 +1,9 @@
-import express, { Request, Response } from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
 import compression from 'compression';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
 import { getEnv } from './config/env';
+import router from './routes/v1';
 
 const env = getEnv();
 
@@ -27,10 +28,10 @@ app.use(compression());
 // Enable CORS
 app.use(cors({}));
 
-app.get('/', (_req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+// Include routes
+app.use('/v1', router);
 
+// Start server
 app.listen(env.PORT, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${env.PORT}`);
 });
