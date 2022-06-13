@@ -1,8 +1,14 @@
 import { RequestHandler } from 'express';
+import UserService from '../services/userService';
 
-export const getUsers: RequestHandler = (req, res) => {
-  // TODO: getUsers service
-  res.send('Hello from GET/users!');
+export const getUsers: RequestHandler = async (req, res) => {
+  try {
+    const users = await UserService.getUsers();
+    res.json(users);
+  } catch (err) {
+    // TODO: Error response handling
+    res.send('ERROR');
+  }
 };
 
 export const getUserById: RequestHandler = (req, res) => {
