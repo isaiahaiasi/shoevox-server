@@ -1,6 +1,11 @@
 import { model, Schema } from 'mongoose';
 
-const commentSchema = new Schema({
+interface IComment {
+  user: Schema.Types.ObjectId;
+  room: Schema.Types.ObjectId;
+  content: string;
+}
+const commentSchema = new Schema<IComment>({
   user: {
     type: Schema.Types.ObjectId, ref: 'User', required: true, immutable: true,
   },

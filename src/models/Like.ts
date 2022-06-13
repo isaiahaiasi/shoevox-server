@@ -1,6 +1,11 @@
 import { model, Schema } from 'mongoose';
 
-const likeSchema = new Schema({
+interface ILike {
+  user: Schema.Types.ObjectId;
+  room: Schema.Types.ObjectId;
+}
+
+const likeSchema = new Schema<ILike>({
   user: {
     type: Schema.Types.ObjectId, ref: 'User', required: true, immutable: true,
   },

@@ -1,7 +1,13 @@
 import { model, Schema } from 'mongoose';
 
+interface IRoom {
+  creator: Schema.Types.ObjectId;
+  title: string;
+  url: string;
+}
+
 // TODO: URL Validation?
-const roomSchema = new Schema({
+const roomSchema = new Schema<IRoom>({
   creator: {
     type: Schema.Types.ObjectId, ref: 'User', required: true, immutable: true,
   },

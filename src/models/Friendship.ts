@@ -1,6 +1,12 @@
 import { model, Schema } from 'mongoose';
 
-const friendshipSchema = new Schema({
+interface IFriendship {
+  requester: Schema.Types.ObjectId;
+  recipient: Schema.Types.ObjectId;
+  status: 'ACCEPTED' | 'PENDING' | 'REJECTED';
+}
+
+const friendshipSchema = new Schema<IFriendship>({
   requester: {
     type: Schema.Types.ObjectId, ref: 'User', required: true, immutable: true,
   },
