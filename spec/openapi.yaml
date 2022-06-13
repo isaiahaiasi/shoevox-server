@@ -73,7 +73,7 @@ paths:
       - in: path
         name: userid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the requested user.
     get:
@@ -128,7 +128,7 @@ paths:
       - in: path
         name: userid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the user who "owns" the resource.
     get:
@@ -175,7 +175,7 @@ paths:
       - in: path
         name: userid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the user who "owns" the resource.
     get:
@@ -247,7 +247,7 @@ paths:
       - in: path
         name: friendid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the Friendship resource being deleted.
     delete:
@@ -273,7 +273,7 @@ paths:
       - in: path
         name: roomid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the requested room.
     get:
@@ -329,7 +329,7 @@ paths:
       - in: path
         name: roomid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the room on which the comments are posted.
     get:
@@ -375,7 +375,7 @@ paths:
       - in: path
         name: roomid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the room on which the likes are made.
     get:
@@ -418,7 +418,7 @@ paths:
       - in: path
         name: commentid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the comment on which the comments are posted.
     delete:
@@ -444,7 +444,7 @@ paths:
       - in: path
         name: likeid
         schema:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         required: true
         description: ID of the Like.
     delete:
@@ -466,29 +466,37 @@ paths:
 
 components:
   schemas:
-    id:
+    Id:
       type: string
     User:
       type: object
       required:
         - username
+        - createdAt
       properties:
         username:
           type: string
+          minLength: 3
+          maxLength: 15
         createdAt:
           $ref: '#/components/schemas/Timestamp'
     Room:
       type: object
       required:
-        - link
+        - url
         - creator
+        - title
       properties:
-        link:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 100
+        url:
           type: string
         likes:
           type: number
         creator:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         createdAt:
           $ref: '#/components/schemas/Timestamp'
     Comment:
@@ -496,28 +504,38 @@ components:
       required:
         - content
         - user
+        - room
       properties:
         content:
           type: string
+          minLength: 3
+          maxLength: 140
+        # User should be populated, but not Room
         user:
           $ref: '#/components/schemas/User'
+        room:
+          $ref: '#/components/schemas/Id'
     Like:
       type: object
       required:
         - user
+        - createdAt
+        - room
       properties:
         user:
           $ref: '#/components/schemas/User'
         createdAt:
           $ref: '#/components/schemas/Timestamp'
+        room:
+          $ref: '#/components/schemas/Id'
     Friendship:
       type: object
       required: [ requester, recipient, status, createdAt ]
       properties:
         requester:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         recipient:
-          $ref: '#/components/schemas/id'
+          $ref: '#/components/schemas/Id'
         status:
           $ref: '#/components/schemas/FriendshipStatus'
         createdAt:
@@ -540,10 +558,14 @@ components:
             properties:
               username:
                 type: string
+                minLength: 3
+                maxLength: 15
               password:
                 type: string
+                minLength: 8
               passwordConfirm:
                 type: string
+                minLength: 8
 
     # TODO: Not sure what the actual implementation here is.
     # It almost certainly needs to be sent as multipart form data
@@ -556,8 +578,10 @@ components:
           schema:
             type: object
             properties:
-              roomName:
+              title:
                 type: string
+                minLength: 3
+                maxLength: 100
 
     CommentBody:
       description: A JSON object containing info necessary to create a Comment record.
@@ -569,6 +593,8 @@ components:
             properties:
               content:
                 type: string
+                minLength: 3
+                maxLength: 140
     
     FriendRequestUpdateBody:
       description: A JSON object containing the new status of the friendship.
