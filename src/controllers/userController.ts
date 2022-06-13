@@ -11,8 +11,20 @@ export const getUsers: RequestHandler = async (req, res) => {
   }
 };
 
-export const getUserById: RequestHandler = (req, res) => {
-  // TODO: getUserById service
+export const getUserById: RequestHandler = async (req, res) => {
   const { userid } = req.params;
-  res.send(`Hello, this is user [${userid}]`);
+
+  try {
+    const user = await UserService.getUserById(userid);
+
+    if (user) {
+      res.json(user);
+    } else {
+      // TODO: 404 helper
+      res.status(404).send('User could not be found.');
+    }
+  } catch (err) {
+    // TODO: Error response handling (fallback error handler)
+    res.send(err);
+  }
 };
