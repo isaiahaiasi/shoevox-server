@@ -11,4 +11,6 @@ To run a version of this server locally:
 - Clone the repo
 - Run `npm install` or `pnpm install`
 - Add necessary environment variables to a file called `.env` in the root directory.
-- Run `npm start`
+- Run `npm run start`
+
+To populate your database with dummy data, run `npm run populate`
