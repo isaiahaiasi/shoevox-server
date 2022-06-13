@@ -12,8 +12,9 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules:
-  # Just don't like this rule
+  # Just don't like these rules
   'import/prefer-default-export': 0
+  'no-plusplus': 0
 
   # TODO: remove this rule override
   'no-console': 0
