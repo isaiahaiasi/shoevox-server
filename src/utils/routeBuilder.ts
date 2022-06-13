@@ -1,4 +1,5 @@
 import { RequestHandler, Router } from 'express';
+import { wrapController } from './controllerWrapper';
 
 export interface Controller {
   [key: string]: RequestHandler
@@ -12,12 +13,16 @@ export interface RouteData<T extends Controller> {
   operationId: keyof T;
 }
 
+/**
+ * Takes a route data object and a Controller group and creates a route.
+ * Wraps controllers so that thrown errors are passed to express error handlers.
+ */
 export function routeBuilder<T extends Controller>(routes: RouteData<T>[], controller: T) {
   const router = Router();
 
   routes.forEach(({ method, path, operationId }) => {
     const requestHandler = controller[operationId];
-    router[method](path, requestHandler);
+    router[method](path, wrapController(requestHandler));
   });
 
   return router;
