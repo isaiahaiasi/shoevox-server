@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { getEnv } from './config/env';
+import { initializeMongoose } from './config/mongooseConfig';
 import router from './routes/v1';
 
 const env = getEnv();
@@ -12,6 +13,9 @@ const app = express();
 // TODO: Logging
 // TODO: Sanitization?
 // TODO: Error catching
+
+// Establish connection with DB
+initializeMongoose();
 
 // Sets security HTTP Headers
 app.use(helmet());
