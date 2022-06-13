@@ -16,6 +16,7 @@ const friendshipSchema = new Schema({
   timestamps: {
     createdAt: true,
   },
+  collection: 'friendships',
 });
 
 export default model('Friendship', friendshipSchema);

@@ -11,6 +11,7 @@ const roomSchema = new Schema({
   url: { type: String, required: true },
 }, {
   timestamps: true,
+  collection: 'rooms',
 });
 
 export default model('Room', roomSchema);

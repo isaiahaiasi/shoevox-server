@@ -11,6 +11,7 @@ const likeSchema = new Schema({
   timestamps: {
     createdAt: true,
   },
+  collection: 'likes',
 });
 
 export default model('Like', likeSchema);
