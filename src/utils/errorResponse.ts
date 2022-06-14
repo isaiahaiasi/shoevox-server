@@ -4,7 +4,7 @@ interface NotImplementedErrorParams {
 }
 
 export function createNotImplementedError({ method, fullPath }: NotImplementedErrorParams) {
-  return { status: 404, msg: `${method}${fullPath} has not been implemented yet!` };
+  return { status: 501, msg: `${method}${fullPath} has not been implemented yet!` };
 }
 
 // TODO: proper typing

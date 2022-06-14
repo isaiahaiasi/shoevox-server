@@ -7,7 +7,7 @@ describe('createNotImplementedError', () => {
     const fullPath = '/endpoint/to/fake/resource';
 
     const expectedError = {
-      status: 404,
+      status: 501,
       msg: 'PATCH/endpoint/to/fake/resource has not been implemented yet!',
     };
 
