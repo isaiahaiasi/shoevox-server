@@ -2,7 +2,7 @@ import { RequestHandler, Router } from 'express';
 import { wrapController } from './controllerWrapper';
 
 export interface Controller {
-  [key: string]: RequestHandler
+  [key: string]: RequestHandler | RequestHandler[]
 }
 
 export interface RouteData<T extends Controller> {
