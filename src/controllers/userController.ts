@@ -18,3 +18,16 @@ export const getUserById: RequestHandler = async (req, res, next) => {
     next({ status: 404, resource: 'user', entity: userid });
   }
 };
+
+export const createUser: RequestHandler = async (req, res, next) => {
+  const { username, password } = req.body;
+  const user = await UserService.createUser({ username, password });
+
+  // TODO: I don't *think* save() actually returns anything other than created user
+  // (Pretty sure it throws on every fail scenario)
+  if (user) {
+    res.json(user);
+  } else {
+    next({ status: 500, msg: 'Could not create user.' });
+  }
+};
