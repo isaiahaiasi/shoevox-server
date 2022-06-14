@@ -7,7 +7,8 @@ function getStatusCode(err: any) {
 }
 
 export const notImplementedHandler: RequestHandler = (req, res, next) => {
-  const err = createNotImplementedError(req);
+  const { method, originalUrl: fullPath } = req;
+  const err = createNotImplementedError({ method, fullPath });
   next(err);
 };
 

@@ -1,12 +1,13 @@
-import { Request } from 'express';
-
-// TODO: proper typing
-type ResponseError = any;
-
-export function createNotImplementedError(req: Request) {
-  return { status: 404, msg: `${req.method}${req.originalUrl} has not been implemented yet!` };
+interface NotImplementedErrorParams {
+  method: string;
+  fullPath: string;
 }
 
-export function createErrorResponse(err: ResponseError) {
+export function createNotImplementedError({ method, fullPath }: NotImplementedErrorParams) {
+  return { status: 404, msg: `${method}${fullPath} has not been implemented yet!` };
+}
+
+// TODO: proper typing
+export function createErrorResponse(err: any) {
   return err;
 }
