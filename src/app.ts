@@ -4,6 +4,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { getEnv } from './config/env';
 import { initializeMongoose } from './config/mongooseConfig';
+import { getErrorHandlers } from './middleware/errorHandlers';
 import router from './routes/v1';
 
 const env = getEnv();
@@ -34,6 +35,9 @@ app.use(cors({}));
 
 // Include routes
 app.use('/v1', router);
+
+// Error handling
+app.use(getErrorHandlers());
 
 // Start server
 app.listen(env.PORT, () => {
