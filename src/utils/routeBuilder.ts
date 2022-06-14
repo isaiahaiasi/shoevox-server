@@ -21,7 +21,10 @@ export function routeBuilder<T extends Controller>(routes: RouteData<T>[], contr
 
   routes.forEach(({ method, path, operationId }) => {
     const requestHandler = controller[operationId];
-    router[method](path, wrapController(requestHandler));
+
+    if (requestHandler) {
+      router[method](path, wrapController(requestHandler));
+    }
   });
 
   return router;

@@ -1,13 +1,14 @@
 import { routeBuilder, RouteData } from '../../src/utils/routeBuilder';
 
+// Not sure how to handle all the dependencies...
 jest.mock('express', () => ({
   Router: () => ({
     get: jest.fn((a: any) => a),
+    patch: jest.fn((a: any) => a),
   }),
 }));
 
 describe('routeBuilder', () => {
-  // Not sure how to handle all the dependencies...
   test('Created route produces controllers for given route', () => {
     const controller = {
       operation1: jest.fn(),
@@ -43,5 +44,22 @@ describe('routeBuilder', () => {
     expect(controller.operation1.mock.calls[0][0]).toBe('a');
     expect(controller.operation1.mock.calls[0][1]).toBe('b');
     expect(controller.operation1.mock.calls[0][2]).toBe('c');
+  });
+
+  // Need to handle this even though Typings *should* make this impossible,
+  // especially if I generate routes from OpenAPI doc, in which case the typings are irrelevant.
+  test('Route is not added if [operationId] is not implemented on Controller', () => {
+    const controller = {};
+    const routeDescription = [{
+      path: '/nothandledyet',
+      method: 'patch',
+      operationId: 'handleNotHandledYet',
+    }];
+
+    /* @ts-ignore */
+    const router = routeBuilder(routeDescription, controller);
+    const patch = router.patch as jest.Mock;
+
+    expect(patch.mock.calls).toHaveLength(0);
   });
 });
