@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ErrorRequestHandler } from 'express';
-import { createErrorResponse } from '../utils/errorResponse';
+import { ErrorRequestHandler, RequestHandler } from 'express';
+import { createErrorResponse, createNotImplementedError } from '../utils/errorResponse';
 
 function getStatusCode(err: any) {
   return err.status ?? err.statusCode ?? 500;
 }
+
+export const notImplementedHandler: RequestHandler = (req, res, next) => {
+  const err = createNotImplementedError(req);
+  next(err);
+};
 
 const logError: ErrorRequestHandler = (err, req, res, next) => {
   console.error(`Error on ${req.path}`, err);
