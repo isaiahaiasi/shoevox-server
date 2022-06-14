@@ -6,16 +6,11 @@ jest.mock('express', () => ({
   }),
 }));
 
-jest.mock('../../src/utils/controllerWrapper.ts', () => ({
-  wrapController: jest.fn(),
-}));
-
 describe('routeBuilder', () => {
   // Not sure how to handle all the dependencies...
-  test.skip('Operations are correctly assigned by operationId in route description object', () => {
+  test('Created route produces controllers for given route', () => {
     const controller = {
-      operation1: () => {},
-      operation2: () => {},
+      operation1: jest.fn(),
     };
     const routeDescription:RouteData<typeof controller>[] = [{
       path: '/',
@@ -25,9 +20,28 @@ describe('routeBuilder', () => {
 
     const router = routeBuilder(routeDescription, controller);
     const get = router.get as jest.Mock;
-    const [arg1, arg2] = get.mock.calls[0];
+    const [path] = get.mock.calls[0];
 
-    expect(arg1).toBe('/');
-    expect(arg2).toBe(controller.operation1);
+    expect(path).toBe('/');
+  });
+
+  test('Controller "operations" are assigned by operationId in route description', () => {
+    const controller = {
+      operation1: jest.fn(),
+    };
+    const routeDescription:RouteData<typeof controller>[] = [{
+      path: '/',
+      method: 'get',
+      operationId: 'operation1',
+    }];
+
+    const router = routeBuilder(routeDescription, controller);
+    const get = router.get as jest.Mock;
+    const [, routeController] = get.mock.calls[0];
+    routeController('a', 'b', 'c');
+
+    expect(controller.operation1.mock.calls[0][0]).toBe('a');
+    expect(controller.operation1.mock.calls[0][1]).toBe('b');
+    expect(controller.operation1.mock.calls[0][2]).toBe('c');
   });
 });

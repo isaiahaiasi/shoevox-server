@@ -1,14 +1,13 @@
 import { RequestHandler, Router } from 'express';
 import { wrapController } from './controllerWrapper';
+import { Method } from './typeHelpers';
 
 export interface Controller {
   [key: string]: RequestHandler | RequestHandler[]
 }
 
 export interface RouteData<T extends Controller> {
-  // Methods supported by OpenAPI 3.0
-  // ('connect' is NOT a supported method)
-  method: 'get' | 'post' | 'put' | 'patch' | 'delete' | 'head' | 'options' | 'trace';
+  method: Method;
   path: string;
   operationId: keyof T;
 }

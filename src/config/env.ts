@@ -16,7 +16,7 @@ function getNumeric(input?: string) {
   return input && !Number.isNaN(+input) ? +input : undefined;
 }
 
-export const fallbacks = {
+const fallbacks = {
   PORT: 5000,
 };
 
