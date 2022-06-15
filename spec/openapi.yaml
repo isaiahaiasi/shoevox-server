@@ -486,6 +486,7 @@ components:
         - url
         - creator
         - title
+        - createdAt
       properties:
         title:
           type: string
@@ -496,7 +497,7 @@ components:
         likes:
           type: number
         creator:
-          $ref: '#/components/schemas/Id'
+          $ref: '#/components/schemas/User'
         createdAt:
           $ref: '#/components/schemas/Timestamp'
     Comment:
