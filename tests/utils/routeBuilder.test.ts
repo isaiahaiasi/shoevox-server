@@ -1,4 +1,4 @@
-import { routeBuilder, RouteData } from '../../src/utils/routeBuilder';
+import { getRouterFromRouteData, RouteData } from '../../src/utils/routeBuilder';
 
 // Not sure how to handle all the dependencies...
 jest.mock('express', () => ({
@@ -13,13 +13,15 @@ describe('routeBuilder', () => {
     const controller = {
       operation1: jest.fn(),
     };
-    const routeDescription:RouteData<typeof controller>[] = [{
-      path: '/',
-      method: 'get',
-      operationId: 'operation1',
-    }];
+    const routeDescription:RouteData<typeof controller> = {
+      '/': {
+        get: {
+          operationId: 'operation1',
+        },
+      },
+    };
 
-    const router = routeBuilder(routeDescription, controller);
+    const router = getRouterFromRouteData(routeDescription, controller);
     const get = router.get as jest.Mock;
     const [path] = get.mock.calls[0];
 
@@ -30,13 +32,15 @@ describe('routeBuilder', () => {
     const controller = {
       operation1: jest.fn(),
     };
-    const routeDescription:RouteData<typeof controller>[] = [{
-      path: '/',
-      method: 'get',
-      operationId: 'operation1',
-    }];
+    const routeDescription:RouteData<typeof controller> = {
+      '/': {
+        get: {
+          operationId: 'operation1',
+        },
+      },
+    };
 
-    const router = routeBuilder(routeDescription, controller);
+    const router = getRouterFromRouteData(routeDescription, controller);
     const get = router.get as jest.Mock;
     const [, routeController] = get.mock.calls[0];
     routeController('a', 'b', 'c');
@@ -50,14 +54,16 @@ describe('routeBuilder', () => {
   // especially if I generate routes from OpenAPI doc, in which case the typings are irrelevant.
   test('Route is not added if [operationId] is not implemented on Controller', () => {
     const controller = {};
-    const routeDescription = [{
-      path: '/nothandledyet',
-      method: 'patch',
-      operationId: 'handleNotHandledYet',
-    }];
+    const routeDescription = {
+      '/nothandledyet': {
+        patch: {
+          operationId: 'handleNotHandledYet',
+        },
+      },
+    };
 
     /* @ts-ignore */
-    const router = routeBuilder(routeDescription, controller);
+    const router = getRouterFromRouteData(routeDescription, controller);
     const patch = router.patch as jest.Mock;
 
     expect(patch.mock.calls).toHaveLength(0);

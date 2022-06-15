@@ -1,24 +1,13 @@
-import YAML from 'yaml';
-import fs from 'fs';
-import path from 'path';
+import { getMethodsFromPath, getOpenApiData } from '../../src/utils/apiSpecHelpers';
 
 const apiFileLocation = '../../spec/openapi.yaml';
 
-const file = fs.readFileSync(path.join(__dirname, apiFileLocation), 'utf-8');
-const opd = YAML.parse(file);
-
-// If I define parameters on the path rather than the endpoint
-// (which, of course I do!)
-// It's convenient to strip that from my "methods" object.
-function getMethodsFromPath(apiPath: string) {
-  const { parameters, ...pathData } = opd.paths[apiPath];
-  return pathData;
-}
+const opd = getOpenApiData(apiFileLocation);
 
 describe('OpenAPI description for ShoeVox', () => {
   test('every endpoint has an operationId', () => {
     Object.keys(opd.paths).forEach((apiPath) => {
-      const methodData = getMethodsFromPath(apiPath);
+      const methodData = getMethodsFromPath(opd.paths[apiPath]);
       Object.values(methodData).forEach((v: any) => {
         expect(v.operationId).not.toBeUndefined();
       });
@@ -41,7 +30,7 @@ describe('OpenAPI description for ShoeVox', () => {
         return;
       }
 
-      Object.entries(getMethodsFromPath(pathName))
+      Object.entries(getMethodsFromPath(opd.paths[pathName]))
         .forEach(([, v]) => {
           expect((v as any).responses['404']).not.toBeUndefined();
         });
@@ -50,7 +39,7 @@ describe('OpenAPI description for ShoeVox', () => {
 
   test('every endpoint with requestBody handles 400 INVALID VALUE error', () => {
     Object.entries(opd.paths).forEach(([pathName]) => {
-      Object.values(getMethodsFromPath(pathName))
+      Object.values(getMethodsFromPath(opd.paths[pathName]))
         .filter((method: any) => !!method.requestBody)
         .forEach((v: any) => {
           expect(v.responses['400']).not.toBeUndefined();
