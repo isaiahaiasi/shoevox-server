@@ -2,12 +2,12 @@ import { RequestHandler } from 'express';
 import { validate } from '../middleware/validators';
 import UserService from '../services/userService';
 
-export const getUsers: RequestHandler = async (req, res) => {
+const getUsers: RequestHandler = async (req, res) => {
   const users = await UserService.getUsers();
   res.json(users);
 };
 
-export const getUserById: RequestHandler = async (req, res, next) => {
+const getUserById: RequestHandler = async (req, res, next) => {
   const { userid } = req.params;
 
   const user = await UserService.getUserById(userid);
@@ -34,7 +34,13 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
 };
 
 // TODO: Might want to find a better place to put these route handler chains?
-export const createUser = [
+const createUser = [
   ...validate('username', 'password'),
   createUserHandler,
 ];
+
+export default {
+  getUsers,
+  getUserById,
+  createUser,
+};

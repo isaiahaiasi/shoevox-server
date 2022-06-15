@@ -3,26 +3,28 @@ import { serializeDocument, serializeDocuments } from '../utils/mongooseHelpers'
 
 const PUBLIC_USER_FIELDS = 'username createdAt';
 
-const UserService = {
-  getUsers: async () => {
-    const users = await User.find({}).select(PUBLIC_USER_FIELDS).exec();
-    return serializeDocuments(users);
-  },
-
-  getUserById: async (id: string) => {
-    const user = await User.findById(id).select(PUBLIC_USER_FIELDS).exec();
-
-    if (!user) {
-      return null;
-    }
-
-    return serializeDocument(user);
-  },
-
-  createUser: async (userData: { username: string, password: string }) => {
-    const user = await new User(userData).save();
-    return serializeDocument(user);
-  },
+const getUsers = async () => {
+  const users = await User.find({}).select(PUBLIC_USER_FIELDS).exec();
+  return serializeDocuments(users);
 };
 
-export default UserService;
+const getUserById = async (id: string) => {
+  const user = await User.findById(id).select(PUBLIC_USER_FIELDS).exec();
+
+  if (!user) {
+    return null;
+  }
+
+  return serializeDocument(user);
+};
+
+const createUser = async (userData: { username: string, password: string }) => {
+  const user = await new User(userData).save();
+  return serializeDocument(user);
+};
+
+export default {
+  getUsers,
+  getUserById,
+  createUser,
+};

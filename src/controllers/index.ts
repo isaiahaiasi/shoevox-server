@@ -1,5 +1,5 @@
-import * as roomController from './roomController';
-import * as userController from './userController';
+import roomController from './roomController';
+import userController from './userController';
 
 export default {
   ...userController,
