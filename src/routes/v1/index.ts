@@ -1,21 +1,10 @@
-import { Router } from 'express';
+import controllers from '../../controllers';
 import { notImplementedHandler } from '../../middleware/errorHandlers';
-import userRoute from './userRoute';
+import { getOpenApiRouter } from '../../utils/routeBuilder';
 
-// TODO: use the OpenAPI spec to dynamically build the whole router structure?...
+const API_DATA_PATH = '../../spec/openapi.yaml';
 
-const router = Router();
-
-const defaultRoutes = [
-  {
-    path: '/users',
-    route: userRoute,
-  },
-];
-
-defaultRoutes.forEach((route) => {
-  router.use(route.path, route.route);
-});
+const router = getOpenApiRouter(API_DATA_PATH, controllers);
 
 router.use('*', notImplementedHandler);
 
