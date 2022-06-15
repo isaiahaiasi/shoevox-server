@@ -1,4 +1,4 @@
-import { getEnv, resetEnv } from '../../src/config/env';
+import { getEnv, resetEnv } from '../../config/env';
 
 describe('env object is populated successfully from process.env', () => {
   const { env: pEnv } = process;

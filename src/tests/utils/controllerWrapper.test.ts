@@ -1,4 +1,4 @@
-import { wrapController } from '../../src/utils/controllerWrapper';
+import { wrapController } from '../../utils/controllerWrapper';
 
 describe('wrapController', () => {
   test('thrown error from controller is caught and passed to next()', () => {

@@ -1,4 +1,4 @@
-import { getCleanPathsObject, getMethodsFromPath } from '../../src/utils/apiSpecHelpers';
+import { getCleanPathsObject, getMethodsFromPath } from '../../utils/apiSpecHelpers';
 
 describe('getMethodsFromPath', () => {
   test(

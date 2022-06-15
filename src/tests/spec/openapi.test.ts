@@ -1,8 +1,7 @@
-import { getMethodsFromPath, getOpenApiData } from '../../src/utils/apiSpecHelpers';
+import json from '../../openapi.json';
+import { getMethodsFromPath } from '../../utils/apiSpecHelpers';
 
-const apiFileLocation = '../../spec/openapi.yaml';
-
-const opd = getOpenApiData(apiFileLocation);
+const opd = json as any;
 
 describe('OpenAPI description for ShoeVox', () => {
   test('every endpoint has an operationId', () => {

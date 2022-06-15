@@ -1,4 +1,4 @@
-import { getRouterFromRouteData, RouteData } from '../../src/utils/routeBuilder';
+import { getRouterFromRouteData, RouteData } from '../../utils/routeBuilder';
 
 // Not sure how to handle all the dependencies...
 jest.mock('express', () => ({

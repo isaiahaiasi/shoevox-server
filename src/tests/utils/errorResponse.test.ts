@@ -1,4 +1,4 @@
-import { createNotImplementedError } from '../../src/utils/errorResponse';
+import { createNotImplementedError } from '../../utils/errorResponse';
 
 describe('createNotImplementedError', () => {
   test('returns error object in expected shape', () => {

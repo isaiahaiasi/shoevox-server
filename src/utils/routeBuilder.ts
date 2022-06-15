@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from 'express';
-import { getCleanPathsObject, getOpenApiData } from './apiSpecHelpers';
+import json from '../openapi.json';
+import { getCleanPathsObject } from './apiSpecHelpers';
 import { wrapController } from './controllerWrapper';
 import { Method } from './typeHelpers';
 
@@ -50,8 +51,7 @@ export function getRouterFromRouteData<T extends Controller>(
   return router;
 }
 
-export function getOpenApiRouter(apiDataPath: string, controller: Controller) {
-  const data = getOpenApiData(apiDataPath);
-  const paths = getCleanPathsObject(data.paths) as unknown;
+export function getOpenApiRouter(controller: Controller) {
+  const paths = getCleanPathsObject(json.paths);
   return getRouterFromRouteData(paths as RouteData<typeof controller>, controller);
 }

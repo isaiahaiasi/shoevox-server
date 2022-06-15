@@ -3,12 +3,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
-import { initializeMongoose } from './src/config/mongooseConfig';
-import Comment from './src/models/Comment';
-import Friendship from './src/models/Friendship';
-import Like from './src/models/Like';
-import Room from './src/models/Room';
-import User from './src/models/User';
+import { initializeMongoose } from './config/mongooseConfig';
+import Comment from './models/Comment';
+import Friendship from './models/Friendship';
+import Like from './models/Like';
+import Room from './models/Room';
+import User from './models/User';
 
 // * Populate DB with dummy data
 
