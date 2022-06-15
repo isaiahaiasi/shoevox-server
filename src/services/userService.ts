@@ -19,7 +19,10 @@ const UserService = {
     return serializeDocument(user);
   },
 
-  createUser: async (userData: { username: string, password: string }) => new User(userData).save(),
+  createUser: async (userData: { username: string, password: string }) => {
+    const user = await new User(userData).save();
+    return serializeDocument(user);
+  },
 };
 
 export default UserService;
