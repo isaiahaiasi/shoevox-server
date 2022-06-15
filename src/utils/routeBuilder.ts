@@ -7,19 +7,38 @@ export interface Controller {
 }
 
 export interface RouteData<T extends Controller> {
-  method: Method;
-  path: string;
-  operationId: keyof T;
+  [key: string]: {
+    [key in Method]?: {
+      operationId: keyof T
+    }
+  }
+}
+
+type MapRouteDataCallback<T extends Controller> = (
+  path: string,
+  method: Method,
+  operationId: keyof T,
+) => void;
+
+function mapRouteData<T extends Controller>(routes: RouteData<T>, fn: MapRouteDataCallback<T>) {
+  Object.entries(routes).forEach(([path, methods]) => {
+    Object.entries(methods).forEach(([method, { operationId }]) => {
+      fn(path, method as Method, operationId);
+    });
+  });
 }
 
 /**
  * Takes a route data object and a Controller group and creates a route.
  * Wraps controllers so that thrown errors are passed to express error handlers.
  */
-export function routeBuilder<T extends Controller>(routes: RouteData<T>[], controller: T) {
+export function getRouterFromRouteData<T extends Controller>(
+  routeData: RouteData<T>,
+  controller: T,
+) {
   const router = Router();
 
-  routes.forEach(({ method, path, operationId }) => {
+  mapRouteData(routeData, (path, method, operationId) => {
     const requestHandler = controller[operationId];
 
     if (requestHandler) {

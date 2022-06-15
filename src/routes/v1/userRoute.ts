@@ -1,24 +1,20 @@
 import * as userController from '../../controllers/userController';
-import { routeBuilder, RouteData } from '../../utils/routeBuilder';
+import { getRouterFromRouteData, RouteData } from '../../utils/routeBuilder';
 
-// TODO: Restructure to match OpenAPI a bit more & also remove redundancy
-// [{ path: [{ method, operationId }] }]
-const userRoutes: RouteData<typeof userController>[] = [
-  {
-    path: '/',
-    method: 'get',
-    operationId: 'getUsers',
+const userRoutes: RouteData<typeof userController> = {
+  '/': {
+    get: {
+      operationId: 'getUsers',
+    },
+    post: {
+      operationId: 'createUser',
+    },
   },
-  {
-    path: '/',
-    method: 'post',
-    operationId: 'createUser',
+  '/:userid': {
+    get: {
+      operationId: 'getUserById',
+    },
   },
-  {
-    path: '/:userid',
-    method: 'get',
-    operationId: 'getUserById',
-  },
-];
+};
 
-export default routeBuilder(userRoutes, userController);
+export default getRouterFromRouteData(userRoutes, userController);
