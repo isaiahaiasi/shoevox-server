@@ -1,22 +1,29 @@
 import fs from 'fs';
-import path from 'path';
+import nodePath from 'path';
 import YAML from 'yaml';
 
+/** Convert path string from OpenAPI style to Express style
+ * @example "/users/{userid}" => "/users/:userid"
+ */
+function convertParamStyle(path: string) {
+  return path.replace(/\{.*?\}/g, (param) => `:${param.slice(1, -1)}`);
+}
+
 export function getOpenApiData(apiDataPath: string) {
-  const file = fs.readFileSync(path.join(__dirname, apiDataPath), 'utf-8');
+  const file = fs.readFileSync(nodePath.join(__dirname, apiDataPath), 'utf-8');
   return YAML.parse(file);
 }
 
 /** Strip 'parameters' property so path object only contains methods */
-export function getMethodsFromPath(apiPath: any) {
-  const { parameters, ...pathData } = apiPath;
+export function getMethodsFromPath(path: any) {
+  const { parameters, ...pathData } = path;
   return pathData;
 }
 
 /** Returns the paths object where each path just has its methods, no parameters */
-export function stripParametersFromPathsObject(paths: any) {
+export function getCleanPathsObject(paths: any) {
   const mappedEntries = Object
     .entries(paths)
-    .map(([pathName, pathData]) => ([pathName, getMethodsFromPath(pathData)]));
+    .map(([pathName, pathData]) => ([convertParamStyle(pathName), getMethodsFromPath(pathData)]));
   return Object.fromEntries(mappedEntries);
 }
