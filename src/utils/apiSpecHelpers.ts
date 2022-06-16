@@ -18,3 +18,7 @@ export function getCleanPathsObject(paths: any) {
     .map(([pathName, pathData]) => ([convertParamStyle(pathName), getMethodsFromPath(pathData)]));
   return Object.fromEntries(mappedEntries);
 }
+
+export function getSchemaProperties<T extends { properties: any }>(schemaObj: T) {
+  return Object.keys(schemaObj.properties) as (keyof T['properties'])[];
+}

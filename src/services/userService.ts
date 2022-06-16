@@ -1,17 +1,19 @@
 import { HydratedDocument, Query } from 'mongoose';
 import User, { IUser } from '../models/User';
+import spec from '../openapi.json';
+import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
 
-export const includeUserFields = ['username', 'createdAt', 'id'];
-const PUBLIC_USER_FIELDS = includeUserFields.join(' ');
+export const userDtoFields = getSchemaProperties(spec.components.schemas.User);
+const userDtoString = userDtoFields.join(' ') as typeof userDtoFields[number];
 
 function getUserDto(user: HydratedDocument<IUser>) {
-  return serializeDocument(user, includeUserFields);
+  return serializeDocument(user, userDtoFields);
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
   return query
-    .select(PUBLIC_USER_FIELDS)
+    .select(userDtoString)
     .exec();
 }
 

@@ -1,14 +1,16 @@
 import { HydratedDocument, Query } from 'mongoose';
 import Room, { IRoom } from '../models/Room';
+import spec from '../openapi.json';
+import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { includeUserFields } from './userService';
+import { userDtoFields } from './userService';
 
-export const includeRoomFields = ['id', 'title', 'creator', 'url', 'createdAt'];
-const PUBLIC_ROOM_FIELDS = includeRoomFields.join(' ');
+const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
+const PUBLIC_ROOM_FIELDS = roomDtoFields.join(' ') as typeof roomDtoFields[number];
 
 function getRoomDto(room: HydratedDocument<IRoom>) {
-  const roomDto = serializeDocument(room, includeRoomFields);
-  roomDto.creator = filterObject(roomDto.creator, includeUserFields);
+  const roomDto = serializeDocument(room, roomDtoFields);
+  roomDto.creator = filterObject(roomDto.creator, userDtoFields);
   return roomDto;
 }
 
