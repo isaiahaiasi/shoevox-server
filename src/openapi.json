@@ -739,7 +739,8 @@
         "type": "object",
         "required": [
           "username",
-          "createdAt"
+          "createdAt",
+          "id"
         ],
         "properties": {
           "username": {
@@ -749,6 +750,9 @@
           },
           "createdAt": {
             "$ref": "#/components/schemas/Timestamp"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Id"
           }
         }
       },
@@ -758,7 +762,8 @@
           "url",
           "creator",
           "title",
-          "createdAt"
+          "createdAt",
+          "id"
         ],
         "properties": {
           "title": {
@@ -777,6 +782,9 @@
           },
           "createdAt": {
             "$ref": "#/components/schemas/Timestamp"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Id"
           }
         }
       },
@@ -785,7 +793,8 @@
         "required": [
           "content",
           "user",
-          "room"
+          "room",
+          "id"
         ],
         "properties": {
           "content": {
@@ -798,6 +807,9 @@
           },
           "room": {
             "$ref": "#/components/schemas/Id"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Id"
           }
         }
       },
@@ -806,7 +818,8 @@
         "required": [
           "user",
           "createdAt",
-          "room"
+          "room",
+          "id"
         ],
         "properties": {
           "user": {
@@ -817,6 +830,9 @@
           },
           "room": {
             "$ref": "#/components/schemas/Id"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Id"
           }
         }
       },
@@ -826,7 +842,8 @@
           "requester",
           "recipient",
           "status",
-          "createdAt"
+          "createdAt",
+          "id"
         ],
         "properties": {
           "requester": {
@@ -840,6 +857,9 @@
           },
           "createdAt": {
             "$ref": "#/components/schemas/Timestamp"
+          },
+          "id": {
+            "$ref": "#/components/schemas/Id"
           }
         }
       },
