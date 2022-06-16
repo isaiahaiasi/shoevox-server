@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-interface IRoom {
+export interface IRoom {
   creator: Schema.Types.ObjectId;
   title: string;
   url: string;
