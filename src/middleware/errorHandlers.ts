@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ErrorRequestHandler, RequestHandler } from 'express';
 import { createErrorResponse, createNotImplementedError } from '../utils/errorResponse';
+import { MethodUppercase } from '../utils/typeHelpers';
 
 function getStatusCode(err: any) {
   return err.status ?? err.statusCode ?? 500;
@@ -8,7 +9,7 @@ function getStatusCode(err: any) {
 
 export const notImplementedHandler: RequestHandler = (req, res, next) => {
   const { method, originalUrl: fullPath } = req;
-  const err = createNotImplementedError({ method, fullPath });
+  const err = createNotImplementedError({ method: method as MethodUppercase, fullPath });
   next(err);
 };
 

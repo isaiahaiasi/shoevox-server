@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import roomService from '../services/roomService';
+import { createResourceNotFoundError } from '../utils/errorResponse';
 
 const getRooms: RequestHandler = async (req, res) => {
   const rooms = await roomService.getRooms();
@@ -13,8 +14,11 @@ const getRoomById: RequestHandler = async (req, res, next) => {
   if (room) {
     res.json(room);
   } else {
-    // TODO: 404 helper.
-    next({ status: 404, resource: 'room', entity: roomid });
+    const { originalUrl: fullPath } = req;
+    const resource = 'room';
+    next(
+      createResourceNotFoundError({ resource, identifier: roomid, fullPath }),
+    );
   }
 };
 

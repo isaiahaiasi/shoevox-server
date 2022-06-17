@@ -1,6 +1,8 @@
 import { RequestHandler } from 'express';
 import { validate } from '../middleware/validators';
 import UserService from '../services/userService';
+import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
+import { MethodUppercase } from '../utils/typeHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {
   const users = await UserService.getUsers();
@@ -15,8 +17,9 @@ const getUserById: RequestHandler = async (req, res, next) => {
   if (user) {
     res.json(user);
   } else {
-    // TODO: 404 helper. Just not yet sure what the correct abstraction is.
-    next({ status: 404, resource: 'user', entity: userid });
+    next(createResourceNotFoundError(
+      { resource: 'user', identifier: userid, fullPath: req.originalUrl },
+    ));
   }
 };
 
@@ -29,7 +32,9 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
   if (user) {
     res.json(user);
   } else {
-    next({ status: 500, msg: 'Could not create user.' });
+    next(createGenericServerError(
+      { method: req.method as MethodUppercase, resource: 'user' },
+    ));
   }
 };
 
