@@ -35,7 +35,7 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
 
 // TODO: Might want to find a better place to put these route handler chains?
 const createUser = [
-  ...validate('username', 'password'),
+  ...validate('UserBody'),
   createUserHandler,
 ];
 
