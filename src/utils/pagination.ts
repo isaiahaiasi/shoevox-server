@@ -22,17 +22,21 @@ export function getPaginatedQuery<T>(
   { cursor, limit }: PaginationInfo<T>,
   filterQuery:FilterQuery<T> = {},
 ) {
-  const queryFilterEntries = cursor
-    .filter((c) => c.value != null)
-    .map((c) => {
-      const { field, value, order = 'asc' } = c;
-      const filterKey = order === 'asc' ? '$gt' : '$lt';
+  const filteredCursorArray = cursor.filter((c) => c.value != null);
 
-      // eg, ['username', { '$gt': value }]
-      return [field, {
-        [filterKey]: value,
-      }];
-    });
+  const queryFilterEntries = filteredCursorArray.map((c, i) => {
+    const { field, value, order = 'asc' } = c;
+
+    const isLast = i === filteredCursorArray.length - 1;
+    const [asc, desc] = isLast ? ['$gt', '$lt'] : ['$gte', '$lte'];
+    const filterKey = order === 'asc' ? asc : desc;
+    // const filterKey = '$eq';
+
+    // eg, ['username', { '$gt': value }]
+    return [field, {
+      [filterKey]: value,
+    }];
+  });
 
   // eg, { username: { $gt: 'steve }, createdAt: { $lt: '2022-06-13T07:21:24.517Z' }}
   const cursorQueryFilter = Object.fromEntries(queryFilterEntries);
@@ -42,7 +46,9 @@ export function getPaginatedQuery<T>(
   const findQuery = { ...filterQuery, ...cursorQueryFilter };
 
   // eg, { 'username': 'asc', 'createdAt': 'desc' }
-  const sort = Object.fromEntries(cursor.map((c) => ([[c.field], c.order ?? 'asc'])));
+  const sort = cursor
+    .map((c) => (c.order === 'desc' ? `-${c.field.toString()}` : c.field.toString()))
+    .join(' ');
 
   return model
     .find(findQuery)

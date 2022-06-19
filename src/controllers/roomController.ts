@@ -1,9 +1,24 @@
 import { RequestHandler } from 'express';
 import roomService from '../services/roomService';
 import { createResourceNotFoundError } from '../utils/errorResponse';
+import { getPaginationParams } from '../utils/pagination';
 
 const getRooms: RequestHandler = async (req, res) => {
-  const rooms = await roomService.getRooms();
+  const { limit, cursor: rawCursor } = getPaginationParams(req, 3);
+
+  let cursor;
+
+  if (rawCursor) {
+    const [id, createdAt] = rawCursor.split(',');
+    cursor = { createdAt: createdAt as string, id: id as string };
+  }
+
+  const rooms = await roomService.getRooms(limit, cursor);
+
+  // const nextCursor = rooms.length > 0
+  //   ? [rooms[rooms.length - 1].id, rooms[rooms.length - 1].createdAt]
+  //   : [];
+
   res.json(rooms);
 };
 
