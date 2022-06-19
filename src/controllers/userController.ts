@@ -2,10 +2,12 @@ import { RequestHandler } from 'express';
 import { validate } from '../middleware/validators';
 import UserService from '../services/userService';
 import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
+import { getPaginationParams } from '../utils/pagination';
 import { MethodUppercase } from '../utils/typeHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {
-  const users = await UserService.getUsers();
+  const { limit, cursor } = getPaginationParams(req, 5);
+  const users = await UserService.getUsers(limit, cursor as string);
   res.json(users);
 };
 

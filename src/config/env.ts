@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { getNumeric } from '../utils/inputHelpers';
 
 /**
  * Loads environment variables and handles fallbacks if necessary.
@@ -11,10 +12,6 @@ interface Env {
 }
 
 dotenv.config();
-
-function getNumeric(input?: string) {
-  return input && !Number.isNaN(+input) ? +input : undefined;
-}
 
 const fallbacks = {
   PORT: 5000,

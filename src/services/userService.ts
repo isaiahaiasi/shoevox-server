@@ -17,8 +17,10 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
     .exec();
 }
 
-const getUsers = async () => {
-  const users = await completeQuery(User.find({}));
+const getUsers = async (limit: number, cursor?: string) => {
+  const filterOpts = cursor ? { username: { $gt: cursor } } : {};
+  const query = User.find(filterOpts).sort({ username: 'asc' }).limit(limit);
+  const users = await completeQuery(query);
   return users.map(getUserDto);
 };
 
