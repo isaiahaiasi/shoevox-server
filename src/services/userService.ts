@@ -3,6 +3,7 @@ import User, { IUser } from '../models/User';
 import spec from '../openapi.json';
 import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
+import { getPaginatedQuery, PaginationInfo } from '../utils/pagination';
 
 export const userDtoFields = getSchemaProperties(spec.components.schemas.User);
 const userDtoString = userDtoFields.join(' ') as typeof userDtoFields[number];
@@ -18,8 +19,15 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
 }
 
 const getUsers = async (limit: number, cursor?: string) => {
-  const filterOpts = cursor ? { username: { $gt: cursor } } : {};
-  const query = User.find(filterOpts).sort({ username: 'asc' }).limit(limit);
+  const paginationInfo: PaginationInfo<IUser> = {
+    limit,
+    cursor: [{
+      field: 'username',
+      value: cursor,
+    }],
+  };
+
+  const query = getPaginatedQuery(User, paginationInfo);
   const users = await completeQuery(query);
   return users.map(getUserDto);
 };
