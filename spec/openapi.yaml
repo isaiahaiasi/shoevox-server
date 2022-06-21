@@ -23,104 +23,118 @@ paths:
     get:
       summary: Returns a list of users.
       operationId: getUsers
-      tags: [ users, paginated ]
+      tags: [users, paginated]
       parameters:
-        - $ref: '#/components/parameters/TimestampCursor'
-        - $ref: '#/components/parameters/Limit'
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
-        '200':
+        "200":
           description: A JSON array of users.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                type: object
+                required: [links, data]
+                properties:
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
     post:
       summary: Creates a new user.
       operationId: createUser
-      tags: [ users ]
+      tags: [users]
       requestBody:
-        $ref: '#/components/requestBodies/UserBody'
+        $ref: "#/components/requestBodies/UserBody"
       responses:
-        '200':
+        "200":
           description: The returned user.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
+                $ref: "#/components/schemas/User"
+        "400":
           description: Invalid new user data was submitted.
   /rooms:
     get:
       summary: Returns a list of "Shoevox" rooms
       operationId: getRooms
-      tags: [ rooms, paginated ]
+      tags: [rooms, paginated]
       parameters:
-        - $ref: '#/components/parameters/TimestampCursor'
-        - $ref: '#/components/parameters/Limit'
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
-        '200':
+        "200":
           description: A JSON array of ShoeVox data objects
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
-  
+                type: object
+                required: [links, data]
+                properties:
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Room"
+
   # USERS sub-resources
   /users/{userid}:
     parameters:
       - in: path
         name: userid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the requested user.
     get:
       summary: Returns a user by their user id.
       operationId: getUserById
-      tags: [ users ]
+      tags: [users]
       responses:
-        '200':
+        "200":
           description: A JSON representation of a User.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
+                $ref: "#/components/schemas/User"
+        "404":
           description: User could not be found.
     # TODO: Not decided on best Method to update entities.
     put:
       summary: Updates a user.
       operationId: updateUserById
-      tags: [ users ]
+      tags: [users]
       requestBody:
         # Not sure if this is 100% appropriate.
         # Is it sufficient to add an optional "oldPassword" field?
-        $ref: '#/components/requestBodies/UserBody'
+        $ref: "#/components/requestBodies/UserBody"
       responses:
-        '200':
+        "200":
           description: A JSON representation of the updated User.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
+                $ref: "#/components/schemas/User"
+        "400":
           description: Invalid value.
-        '403':
+        "403":
           description: Client did not have required permissions to update user.
-        '404':
+        "404":
           description: User could not be found.
     delete:
-      tags: [ users ]
+      tags: [users]
       summary: Deletes a user.
       operationId: deleteUserById
       responses:
-        '200':
+        "200":
           description: User was deleted successfully.
-        '403':
+        "403":
           description: Client did not have required permissions to delete user.
-        '404':
+        "404":
           description: User could not be found.
 
   /users/{userid}/rooms:
@@ -128,26 +142,32 @@ paths:
       - in: path
         name: userid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the user who "owns" the resource.
     get:
       summary: Gets all the rooms created by a given User.
       operationId: getRoomsByUserId
-      tags: [ users, rooms, paginated ]
+      tags: [users, rooms, paginated]
       parameters:
-        - $ref: '#/components/parameters/TimestampCursor'
-        - $ref: '#/components/parameters/Limit'
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
-        '200':
+        "200":
           description: List of Rooms.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Room'
-        '404':
+                type: object
+                required: [links, data]
+                properties:
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Room"
+        "404":
           description: User not found.
 
     # TODO: This should probably just be POST/rooms
@@ -155,19 +175,19 @@ paths:
       # TODO: REQ BODY
       summary: Posts a new Room under the given User.
       operationId: createRoom
-      tags: [ users, rooms ]
+      tags: [users, rooms]
       responses:
-        '200':
+        "200":
           description: The newly created Room.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
-        '400':
+                $ref: "#/components/schemas/Room"
+        "400":
           description: Could not create Room due to malformed data.
-        '403':
+        "403":
           description: Could not create Room under given User due to insufficient permissions.
-        '404':
+        "404":
           description: Could not create Room because given User could not be found.
 
   /users/{userid}/friends:
@@ -175,28 +195,34 @@ paths:
       - in: path
         name: userid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the user who "owns" the resource.
     get:
       summary: Returns a list of users. Client ID must match {userid}.
       operationId: getFriendshipsByUserId
-      tags: [ users, friendships, paginated ]
+      tags: [users, friendships, paginated]
       parameters:
-        - $ref: '#/components/parameters/TimestampCursor'
-        - $ref: '#/components/parameters/Limit'
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
-        '200':
+        "200":
           description: A JSON array of Friendship objects.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Friendship'
-        '403':
+                type: object
+                required: [links, data]
+                properties:
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Friendship"
+        "403":
           description: Client did not have permission to access User's Friendships.
-        '404':
+        "404":
           description: User not found.
     post:
       summary: Sends Friend request.
@@ -204,15 +230,15 @@ paths:
         Creates a Friendship object where the Requester is the CLIENT user
         and the Recipient is the {userid}. The status is 'PENDING'.
       operationId: createFriendshipByUserId
-      tags: [ users, friendships]
+      tags: [users, friendships]
       responses:
-        '200':
+        "200":
           description: The Friendship object created.
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Friendship'
-        '404':
+                $ref: "#/components/schemas/Friendship"
+        "404":
           description: User not found.
     patch:
       summary: Accepts or Rejects an existing Friend request.
@@ -222,23 +248,22 @@ paths:
         CLIENT ID must match {userid} for 'ACCEPTED' to be valid.
         CLIENT ID must match recipient or requester for 'REJECTED' to be valid.
       operationId: updateFriendshipByUserId
-      tags: [ users, friendships ]
+      tags: [users, friendships]
       requestBody:
-        $ref: '#/components/requestBodies/FriendRequestUpdateBody'
+        $ref: "#/components/requestBodies/FriendRequestUpdateBody"
       responses:
-        '200':
+        "200":
           description: The updated Friendship object.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Friendship'
-        '400':
+                $ref: "#/components/schemas/Friendship"
+        "400":
           description: Invalid value.
-        '403':
+        "403":
           description: Client not authorized to update Friend Request status.
-        '404':
+        "404":
           description: User not found.
-
 
   # In most cases, I would feel like this is too deeply nested
   # But in this case userid A + userid B makes the most sense.
@@ -247,25 +272,24 @@ paths:
       - in: path
         name: friendid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the Friendship resource being deleted.
     delete:
       summary: Deletes a Friend from a User's friends list.
       operationId: deleteFriend
-      tags: [ users, friendships ]
+      tags: [users, friendships]
       responses:
-        '200':
+        "200":
           description: Returns the successfully deleted Friend.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '403':
+                $ref: "#/components/schemas/User"
+        "403":
           description: Client did not have required permissions to delete Friend.
-        '404':
+        "404":
           description: User or Friend could not be found.
-
 
   # ROOMS SUB-RESOURCES
   /rooms/{roomid}:
@@ -273,55 +297,55 @@ paths:
       - in: path
         name: roomid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the requested room.
     get:
       summary: Gets a room by its ID.
       operationId: getRoomById
-      tags: [ rooms ]
+      tags: [rooms]
       responses:
-        '200':
+        "200":
           description: Returns a room.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
-        '404':
+                $ref: "#/components/schemas/Room"
+        "404":
           description: Room with requested ID could not be found.
     put:
       summary: Updates a room by its ID.
       operationId: updateRoomById
-      tags: [ rooms ]
+      tags: [rooms]
       requestBody:
-        $ref: '#/components/requestBodies/RoomBody'
+        $ref: "#/components/requestBodies/RoomBody"
       responses:
-        '200':
+        "200":
           description: Returns the successfully updated room.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
-        '400':
+                $ref: "#/components/schemas/Room"
+        "400":
           description: Invalid value.
-        '403':
+        "403":
           description: Client did not have required permissions to update room.
-        '404':
+        "404":
           description: Room could not be found.
     delete:
       summary: Deletes a room by its ID.
       operationId: deleteRoomById
-      tags: [ rooms ]
+      tags: [rooms]
       responses:
-        '200':
+        "200":
           description: Returns the successfully deleted room.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Room'
-        '403':
+                $ref: "#/components/schemas/Room"
+        "403":
           description: Client did not have required permissions to delete room.
-        '404':
+        "404":
           description: Room could not be found.
 
   /rooms/{roomid}/comments:
@@ -329,45 +353,51 @@ paths:
       - in: path
         name: roomid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the room on which the comments are posted.
     get:
       summary: Gets the list of comments for a room.
       operationId: getCommentsByRoomId
-      tags: [ rooms, comments, paginated ]
+      tags: [rooms, comments, paginated]
       parameters:
-        - $ref: '#/components/parameters/TimestampCursor'
-        - $ref: '#/components/parameters/Limit'
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
-        '200':
+        "200":
           description: Returns the list of comments.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Comment'
-        '404':
+                type: object
+                required: [links, data]
+                properties:
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Comment"
+        "404":
           description: Room could not be found.
     post:
       summary: Creates comment on room.
       operationId: createComment
-      tags: [ rooms, comments ]
+      tags: [rooms, comments]
       requestBody:
-        $ref: '#/components/requestBodies/CommentBody'
+        $ref: "#/components/requestBodies/CommentBody"
       responses:
-        '200':
+        "200":
           description: Returns the successfully posted comment.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-        '400':
+                $ref: "#/components/schemas/Comment"
+        "400":
           description: Invalid data.
-        '403':
+        "403":
           description: Client was could not be authenticated.
-        '404':
+        "404":
           description: Room could not be found.
 
   /rooms/{roomid}/likes:
@@ -375,42 +405,48 @@ paths:
       - in: path
         name: roomid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the room on which the likes are made.
     get:
       summary: Gets a list of Likes on a Room.
       operationId: getLikesByRoom
-      tags: [ rooms, likes, paginated ]
+      tags: [rooms, likes, paginated]
       parameters:
-        - $ref: '#/components/parameters/TimestampCursor'
-        - $ref: '#/components/parameters/Limit'
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
       responses:
-        '200':
+        "200":
           description: Returns a list of Likes on a Room.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Like'
-        '404':
+                type: object
+                required: [links, data]
+                properties:
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Like"
+        "404":
           description: Room not found.
     post:
       # TODO: where does the userid come from? Body, or auth headers?
       summary: Adds a Like on a Room.
       operationId: createLike
-      tags: [ rooms, likes ]
+      tags: [rooms, likes]
       responses:
-        '200':
+        "200":
           description: Returns the successfully added Like.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
-        '403':
+                $ref: "#/components/schemas/Like"
+        "403":
           description: Attempted to like while not authenticated.
-        '404':
+        "404":
           description: Room not found.
 
   /comments/{commentid}:
@@ -418,23 +454,23 @@ paths:
       - in: path
         name: commentid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the comment on which the comments are posted.
     delete:
       summary: Delete given comment.
       operationId: deleteComment
-      tags: [ comments ]
+      tags: [comments]
       responses:
-        '200':
+        "200":
           description: Returns the successfully deleted comment.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
-        '403':
+                $ref: "#/components/schemas/Comment"
+        "403":
           description: Client did not have the required permissions to delete comment.
-        '404':
+        "404":
           description: Comment could not be found.
 
   # TODO: not actually sure what the proper path for a Like resource should be
@@ -444,25 +480,24 @@ paths:
       - in: path
         name: likeid
         schema:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         required: true
         description: ID of the Like.
     delete:
       summary: Delete given Like.
       operationId: deleteLike
-      tags: [ likes ]
+      tags: [likes]
       responses:
-        '200':
+        "200":
           description: Returns the successfully deleted Like.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Like'
-        '403':
+                $ref: "#/components/schemas/Like"
+        "403":
           description: Client did not have the required permissions to delete Like.
-        '404':
+        "404":
           description: Like could not be found.
-
 
 components:
   schemas:
@@ -480,15 +515,15 @@ components:
           minLength: 3
           maxLength: 15
         createdAt:
-          $ref: '#/components/schemas/Timestamp'
+          $ref: "#/components/schemas/Timestamp"
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
     Room:
       type: object
       required:
+        - title
         - url
         - creator
-        - title
         - createdAt
         - id
       properties:
@@ -498,14 +533,14 @@ components:
           maxLength: 100
         url:
           type: string
+        creator:
+          $ref: "#/components/schemas/User"
+        createdAt:
+          $ref: "#/components/schemas/Timestamp"
+        id:
+          $ref: "#/components/schemas/Id"
         likes:
           type: number
-        creator:
-          $ref: '#/components/schemas/User'
-        createdAt:
-          $ref: '#/components/schemas/Timestamp'
-        id:
-          $ref: '#/components/schemas/Id'
     Comment:
       type: object
       required:
@@ -520,11 +555,11 @@ components:
           maxLength: 140
         # User should be populated, but not Room
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         room:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
     Like:
       type: object
       required:
@@ -534,33 +569,43 @@ components:
         - id
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         createdAt:
-          $ref: '#/components/schemas/Timestamp'
+          $ref: "#/components/schemas/Timestamp"
         room:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
     Friendship:
       type: object
-      required: [ requester, recipient, status, createdAt, id ]
+      required: [requester, recipient, status, createdAt, id]
       properties:
         requester:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         recipient:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
         status:
-          $ref: '#/components/schemas/FriendshipStatus'
+          $ref: "#/components/schemas/FriendshipStatus"
         createdAt:
-          $ref: '#/components/schemas/Timestamp'
+          $ref: "#/components/schemas/Timestamp"
         id:
-          $ref: '#/components/schemas/Id'
+          $ref: "#/components/schemas/Id"
     FriendshipStatus:
       type: string
-      enum: [ 'ACCEPTED', 'PENDING', 'REJECTED' ]
+      enum: ["ACCEPTED", "PENDING", "REJECTED"]
     Timestamp:
       type: string
       format: date-time
+    PaginationLinks:
+      type: object
+      properties:
+        next:
+          type: object
+          required: [href]
+          properties:
+            href:
+              type: string
+              format: url
 
   requestBodies:
     UserBody:
@@ -610,7 +655,7 @@ components:
                 type: string
                 minLength: 3
                 maxLength: 140
-    
+
     FriendRequestUpdateBody:
       description: A JSON object containing the new status of the friendship.
       required: true
@@ -620,15 +665,16 @@ components:
             type: object
             properties:
               status:
-                $ref: '#/components/schemas/FriendshipStatus'
+                $ref: "#/components/schemas/FriendshipStatus"
 
   parameters:
-    TimestampCursor:
+    Cursor:
       name: cursor
       in: query
-      description: Timestamp-based index for cursor-based pagination.
+      description: A cursor for pagination queries.
+      # There will be several different types of cursors, so not sure on best representation
       schema:
-        $ref: '#/components/schemas/Timestamp'
+        type: string
     Limit:
       name: limit
       in: query
