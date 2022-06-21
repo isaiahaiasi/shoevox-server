@@ -61,3 +61,9 @@ export function getPaginationParams(req: Request, defaultLimit: number) {
   const cursor = req.query.cursor as string | undefined;
   return { limit, cursor };
 }
+
+export function getNextLink(url: string, cursor: any, limit: number) {
+  return {
+    href: `${url}?cursor=${encodeURIComponent(cursor)}&limit=${limit}`,
+  };
+}
