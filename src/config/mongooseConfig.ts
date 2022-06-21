@@ -2,13 +2,17 @@ import mongoose from 'mongoose';
 import { getEnv } from './env';
 
 export async function initializeMongoose() {
-  const { MONGODB_URI } = getEnv();
+  const { MONGODB_URI, NODE_ENV } = getEnv();
 
   if (!MONGODB_URI) {
     throw Error(
       'Could not establish MongoDB connection.\n'
       + 'No connection URI provided.',
     );
+  }
+
+  if (NODE_ENV === 'development') {
+    mongoose.set('debug', true);
   }
 
   mongoose.connect(MONGODB_URI).catch((err) => {

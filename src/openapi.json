@@ -22,7 +22,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/TimestampCursor"
+            "$ref": "#/components/parameters/Cursor"
           },
           {
             "$ref": "#/components/parameters/Limit"
@@ -34,9 +34,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "required": [
+                    "links",
+                    "data"
+                  ],
+                  "properties": {
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
                   }
                 }
               }
@@ -80,7 +92,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/TimestampCursor"
+            "$ref": "#/components/parameters/Cursor"
           },
           {
             "$ref": "#/components/parameters/Limit"
@@ -92,7 +104,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Room"
+                  "type": "object",
+                  "required": [
+                    "links",
+                    "data"
+                  ],
+                  "properties": {
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Room"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -206,7 +233,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/TimestampCursor"
+            "$ref": "#/components/parameters/Cursor"
           },
           {
             "$ref": "#/components/parameters/Limit"
@@ -218,9 +245,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Room"
+                  "type": "object",
+                  "required": [
+                    "links",
+                    "data"
+                  ],
+                  "properties": {
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Room"
+                      }
+                    }
                   }
                 }
               }
@@ -283,7 +322,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/TimestampCursor"
+            "$ref": "#/components/parameters/Cursor"
           },
           {
             "$ref": "#/components/parameters/Limit"
@@ -295,9 +334,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Friendship"
+                  "type": "object",
+                  "required": [
+                    "links",
+                    "data"
+                  ],
+                  "properties": {
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Friendship"
+                      }
+                    }
                   }
                 }
               }
@@ -521,7 +572,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/TimestampCursor"
+            "$ref": "#/components/parameters/Cursor"
           },
           {
             "$ref": "#/components/parameters/Limit"
@@ -533,9 +584,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Comment"
+                  "type": "object",
+                  "required": [
+                    "links",
+                    "data"
+                  ],
+                  "properties": {
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Comment"
+                      }
+                    }
                   }
                 }
               }
@@ -601,7 +664,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/TimestampCursor"
+            "$ref": "#/components/parameters/Cursor"
           },
           {
             "$ref": "#/components/parameters/Limit"
@@ -613,9 +676,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Like"
+                  "type": "object",
+                  "required": [
+                    "links",
+                    "data"
+                  ],
+                  "properties": {
+                    "links": {
+                      "$ref": "#/components/schemas/PaginationLinks"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Like"
+                      }
+                    }
                   }
                 }
               }
@@ -759,9 +834,9 @@
       "Room": {
         "type": "object",
         "required": [
+          "title",
           "url",
           "creator",
-          "title",
           "createdAt",
           "id"
         ],
@@ -774,9 +849,6 @@
           "url": {
             "type": "string"
           },
-          "likes": {
-            "type": "number"
-          },
           "creator": {
             "$ref": "#/components/schemas/User"
           },
@@ -785,6 +857,9 @@
           },
           "id": {
             "$ref": "#/components/schemas/Id"
+          },
+          "likes": {
+            "type": "number"
           }
         }
       },
@@ -874,6 +949,23 @@
       "Timestamp": {
         "type": "string",
         "format": "date-time"
+      },
+      "PaginationLinks": {
+        "type": "object",
+        "properties": {
+          "next": {
+            "type": "object",
+            "required": [
+              "href"
+            ],
+            "properties": {
+              "href": {
+                "type": "string",
+                "format": "url"
+              }
+            }
+          }
+        }
       }
     },
     "requestBodies": {
@@ -957,12 +1049,12 @@
       }
     },
     "parameters": {
-      "TimestampCursor": {
+      "Cursor": {
         "name": "cursor",
         "in": "query",
-        "description": "Timestamp-based index for cursor-based pagination.",
+        "description": "A cursor for pagination queries.",
         "schema": {
-          "$ref": "#/components/schemas/Timestamp"
+          "type": "string"
         }
       },
       "Limit": {

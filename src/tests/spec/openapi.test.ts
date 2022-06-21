@@ -16,7 +16,7 @@ describe('OpenAPI description for ShoeVox', () => {
   test('every required property of a schema is defined on the schema', () => {
     Object.values(opd.components.schemas).forEach((schema: any) => {
       if (schema.type === 'object') {
-        schema.required.forEach((requiredPropName: string) => {
+        schema.required?.forEach((requiredPropName: string) => {
           expect(schema.properties[requiredPropName]).not.toBeUndefined();
         });
       }
@@ -43,6 +43,25 @@ describe('OpenAPI description for ShoeVox', () => {
         .forEach((v: any) => {
           expect(v.responses['400']).not.toBeUndefined();
         });
+    });
+  });
+
+  test('Paginated responses have "data" array and a "links" property', () => {
+    Object.keys(opd.paths).forEach((apiPath) => {
+      const methodData = getMethodsFromPath(opd.paths[apiPath]);
+      Object.values(methodData).forEach((v: any) => {
+        if (v.tags.includes('paginated')) {
+          const { schema } = v.responses['200'].content['application/json'];
+
+          expect(schema.required).toContain('links');
+          expect(schema.required).toContain('data');
+
+          expect(schema.properties.links).not.toBeUndefined();
+          expect(schema.properties.data).not.toBeUndefined();
+
+          expect(schema.properties.data.type).toBe('array');
+        }
+      });
     });
   });
 });

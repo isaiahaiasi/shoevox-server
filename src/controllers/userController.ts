@@ -2,11 +2,29 @@ import { RequestHandler } from 'express';
 import { validate } from '../middleware/validators';
 import UserService from '../services/userService';
 import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
-import { MethodUppercase } from '../utils/typeHelpers';
+import { getFullRequestUrl } from '../utils/expressHelpers';
+import { getNextLink, getPaginationParams } from '../utils/pagination';
+import { ApiResponseLinks, MethodUppercase } from '../utils/typeHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {
-  const users = await UserService.getUsers();
-  res.json(users);
+  const { limit, cursor } = getPaginationParams(req, 5);
+
+  const users = await UserService.getUsers(limit, cursor as string);
+
+  // Get the "next" link
+  const links: ApiResponseLinks = {};
+  if (users.length === limit) { // (If users < limit, we know there's no next)
+    links.next = getNextLink(
+      getFullRequestUrl(req, false),
+      users[users.length - 1].username,
+      limit,
+    );
+  }
+
+  res.json({
+    data: users,
+    links,
+  });
 };
 
 const getUserById: RequestHandler = async (req, res, next) => {

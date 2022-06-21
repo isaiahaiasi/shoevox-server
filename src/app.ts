@@ -13,7 +13,6 @@ const app = express();
 
 // TODO: Logging
 // TODO: Sanitization?
-// TODO: Error catching
 
 // Establish connection with DB
 initializeMongoose();
