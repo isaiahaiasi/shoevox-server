@@ -31,7 +31,6 @@ const getRooms = async (limit: number, cursor?: RoomCursor) => {
   const paginationInfo: PaginationInfo<any> = {
     limit,
     cursor: [
-      // This cursor array does not guarantee uniqueness,
       {
         field: 'createdAt',
         value: cursor ? new Date(cursor.createdAt) : undefined,
