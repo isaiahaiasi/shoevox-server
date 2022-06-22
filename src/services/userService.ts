@@ -6,7 +6,6 @@ import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/pagination';
 
 export const userDtoFields = getSchemaProperties(spec.components.schemas.User);
-const userDtoString = userDtoFields.join(' ') as typeof userDtoFields[number];
 
 function getUserDto(user: HydratedDocument<IUser>) {
   return serializeDocument(user, userDtoFields);
@@ -14,7 +13,7 @@ function getUserDto(user: HydratedDocument<IUser>) {
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
   return query
-    .select(userDtoString)
+    .select(userDtoFields.join(' '))
     .exec();
 }
 

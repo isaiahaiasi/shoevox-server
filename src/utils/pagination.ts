@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { FilterQuery, HydratedDocument, Model } from 'mongoose';
 import { getNumeric } from './inputHelpers';
+import { ApiResponseLinks } from './typeHelpers';
 
 // TODO: Would like shape to be { [field]: value, order?: 'asc' | 'desc' }
 // But can't figure out how to Type it correctly
@@ -104,5 +105,23 @@ export function getPaginationParams(req: Request, defaultLimit: number) {
 export function getNextLink(url: string, cursor: any, limit: number) {
   return {
     href: `${url}?cursor=${encodeURIComponent(cursor)}&limit=${limit}`,
+  };
+}
+
+export function getPaginationLinks<T, C>(
+  data: T[],
+  limit: number,
+  url: string,
+  getCursor: (lastEntry: T) => C,
+): ApiResponseLinks {
+  if (data.length !== limit) {
+    // if length < limit, we know there's no "next"
+    return {};
+  }
+
+  const nextCursor = getCursor(data[data.length - 1]);
+
+  return {
+    next: getNextLink(url, nextCursor, limit),
   };
 }

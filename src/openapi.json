@@ -885,6 +885,9 @@
           },
           "id": {
             "$ref": "#/components/schemas/Id"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Timestamp"
           }
         }
       },

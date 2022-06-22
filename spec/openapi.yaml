@@ -560,6 +560,8 @@ components:
           $ref: "#/components/schemas/Id"
         id:
           $ref: "#/components/schemas/Id"
+        createdAt:
+          $ref: "#/components/schemas/Timestamp"
     Like:
       type: object
       required:

@@ -12,7 +12,6 @@ export interface RoomCursor {
 }
 
 const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
-const PUBLIC_ROOM_FIELDS = roomDtoFields.join(' ') as typeof roomDtoFields[number];
 
 function getRoomDto(room: HydratedDocument<IRoom>) {
   const roomDto = serializeDocument(room, roomDtoFields);
@@ -22,7 +21,7 @@ function getRoomDto(room: HydratedDocument<IRoom>) {
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
   return query
-    .select(PUBLIC_ROOM_FIELDS)
+    .select(roomDtoFields.join(' '))
     .populate('creator')
     .exec();
 }
