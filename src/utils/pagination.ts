@@ -110,8 +110,8 @@ export function getNextLink(url: string, cursor: any, limit: number) {
 
 export function getPaginationLinks<T, C>(
   data: T[],
-  limit: number,
   url: string,
+  limit: number,
   getCursor: (lastEntry: T) => C,
 ): ApiResponseLinks {
   if (data.length !== limit) {
@@ -124,4 +124,32 @@ export function getPaginationLinks<T, C>(
   return {
     next: getNextLink(url, nextCursor, limit),
   };
+}
+
+export function serializeTimestampCursor(
+  refObject: { createdAt: string | number | Date, id: any },
+) {
+  return [
+    new Date(refObject.createdAt).toISOString(),
+    refObject.id,
+  ] as const;
+}
+
+export function deserializeTimestampCursor(
+  rawCursor?: string,
+): Cursor<{ createdAt: any, _id: any }> {
+  let cursorValues;
+  if (rawCursor) {
+    const [createdAt, id] = rawCursor.split(',');
+    cursorValues = { createdAt, id };
+  }
+
+  return [
+    {
+      field: 'createdAt',
+      value: cursorValues ? new Date(cursorValues.createdAt) : undefined,
+      order: 'desc',
+    },
+    { field: '_id', value: cursorValues?.id },
+  ];
 }

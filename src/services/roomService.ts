@@ -3,20 +3,17 @@ import Room, { IRoom } from '../models/Room';
 import spec from '../openapi.json';
 import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { getPaginatedQuery, PaginationInfo } from '../utils/pagination';
+import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/pagination';
 import { userDtoFields } from './userService';
 
-export interface RoomCursor {
-  createdAt: string;
-  id: string;
-}
-
+// TODO: Afraid I'm going to have to write actual types for these...
 const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
+type RoomDto = { [Property in typeof roomDtoFields[number] ]: any } & { createdAt: Date };
 
-function getRoomDto(room: HydratedDocument<IRoom>) {
+function getRoomDto(room: HydratedDocument<IRoom>): RoomDto {
   const roomDto = serializeDocument(room, roomDtoFields);
   roomDto.creator = filterObject(roomDto.creator, userDtoFields);
-  return roomDto;
+  return roomDto as RoomDto & { createdAt: Date };
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
@@ -26,20 +23,13 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
     .exec();
 }
 
-const getRooms = async (limit: number, cursor?: RoomCursor) => {
-  const paginationInfo: PaginationInfo<any> = {
-    limit,
-    cursor: [
-      {
-        field: 'createdAt',
-        value: cursor ? new Date(cursor.createdAt) : undefined,
-        order: 'desc',
-      },
-      { field: '_id', value: cursor?.id },
-    ],
-  };
+const getRooms = async (limit: number, rawCursor?: string) => {
+  const cursor = deserializeTimestampCursor(rawCursor);
+
+  const paginationInfo: PaginationInfo<any> = { limit, cursor };
 
   const query = getPaginatedQuery(Room, paginationInfo);
+
   const rooms = await completeQuery(query);
 
   return rooms.map(getRoomDto);

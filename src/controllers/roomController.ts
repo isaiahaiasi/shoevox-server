@@ -3,27 +3,15 @@ import commentService from '../services/commentService';
 import roomService from '../services/roomService';
 import { createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getPaginationLinks, getPaginationParams } from '../utils/pagination';
+import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/pagination';
 
 const getRooms: RequestHandler = async (req, res) => {
   const { limit, cursor: rawCursor } = getPaginationParams(req, 3);
 
-  // Get cursor
-  let cursor;
-  if (rawCursor) {
-    const [createdAt, id] = rawCursor.split(',');
-    cursor = { createdAt: createdAt as string, id: id as string };
-  }
+  const rooms = await roomService.getRooms(limit, rawCursor);
 
-  // Get rooms data
-  const rooms = await roomService.getRooms(limit, cursor);
-
-  // get "next" link
   const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(rooms, limit, baseUrl, (room) => ([
-    new Date(room.createdAt).toISOString(),
-    room.id,
-  ]));
+  const links = getPaginationLinks(rooms, baseUrl, limit, serializeTimestampCursor);
 
   res.json({
     data: rooms,
@@ -55,10 +43,8 @@ const getCommentsByRoomId: RequestHandler = async (req, res) => {
 
   // get "next" link
   const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(comments, limit, baseUrl, (comment) => ([
-    new Date(comment.createdAt).toISOString(),
-    comment.id,
-  ]));
+
+  const links = getPaginationLinks(comments, baseUrl, limit, serializeTimestampCursor);
 
   res.json({
     count: comments.length,

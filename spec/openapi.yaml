@@ -548,6 +548,7 @@ components:
         - user
         - room
         - id
+        - createdAt
       properties:
         content:
           type: string

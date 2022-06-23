@@ -869,7 +869,8 @@
           "content",
           "user",
           "room",
-          "id"
+          "id",
+          "createdAt"
         ],
         "properties": {
           "content": {
