@@ -3,7 +3,7 @@ import commentService from '../services/commentService';
 import roomService from '../services/roomService';
 import { createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/pagination';
+import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
 const getRooms: RequestHandler = async (req, res) => {
   const { limit, cursor: rawCursor } = getPaginationParams(req, 3);

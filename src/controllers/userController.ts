@@ -3,7 +3,7 @@ import { validate } from '../middleware/validators';
 import UserService from '../services/userService';
 import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getNextLink, getPaginationParams } from '../utils/pagination';
+import { getNextLink, getPaginationParams } from '../utils/paginationHelpers';
 import { ApiResponseLinks, MethodUppercase } from '../utils/typeHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {

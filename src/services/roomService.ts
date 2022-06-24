@@ -3,7 +3,7 @@ import Room, { IRoom } from '../models/Room';
 import spec from '../openapi.json';
 import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/pagination';
+import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 import { userDtoFields } from './userService';
 
 // TODO: Afraid I'm going to have to write actual types for these...

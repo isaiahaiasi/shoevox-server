@@ -3,7 +3,7 @@ import User, { IUser } from '../models/User';
 import spec from '../openapi.json';
 import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
-import { getPaginatedQuery, PaginationInfo } from '../utils/pagination';
+import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
 export const userDtoFields = getSchemaProperties(spec.components.schemas.User);
 

@@ -1,19 +1,15 @@
-import { Request } from 'express';
 import { FilterQuery, HydratedDocument, Model } from 'mongoose';
 import { getNumeric } from './inputHelpers';
 import { ApiResponseLinks } from './typeHelpers';
 
-// TODO: Would like shape to be { [field]: value, order?: 'asc' | 'desc' }
-// But can't figure out how to Type it correctly
-// (can't use generics in Index Signatures, can't add additional props to Mapped Types)
-type Cursor<T> = {
+type CursorDescription<T> = {
   field: keyof HydratedDocument<T>;
   value: any;
   order?: 'asc' | 'desc';
 }[];
 
 export interface PaginationInfo<T> {
-  cursor: Cursor<T>;
+  cursor: CursorDescription<T>;
   limit: number;
 }
 
@@ -26,7 +22,7 @@ function getFilterKey(order: 'asc' | 'desc' | undefined) {
  * Uses cursor information for a single field to create a Mongoose FilterQuery
  * @example [{ field: 'username', value: 'Steve' }] => { username: { $gt: 'Steve' }}
  */
-function getSimpleCursorFilterQuery<T>(cursor: Cursor<T>): FilterQuery<T> {
+function getSimpleCursorFilterQuery<T>(cursor: CursorDescription<T>): FilterQuery<T> {
   const { field, value, order } = cursor[0];
   const filterKey = getFilterKey(order);
   return { [field]: { [filterKey]: value } } as FilterQuery<T>;
@@ -41,7 +37,7 @@ function getSimpleCursorFilterQuery<T>(cursor: Cursor<T>): FilterQuery<T> {
  *     { createdAt: 'Aug 12', _id: { $gt: 'abc123' }}
  * ]}
  */
-function getComplexCursorFilterQuery<T>(cursor: Cursor<T>): FilterQuery<T> {
+function getComplexCursorFilterQuery<T>(cursor: CursorDescription<T>): FilterQuery<T> {
   if (cursor.length < 2) {
     throw Error('Cursor must have at least 2 entries to create a Complex Cursor Query.');
   }
@@ -65,7 +61,7 @@ function getComplexCursorFilterQuery<T>(cursor: Cursor<T>): FilterQuery<T> {
   return { $or: filterList };
 }
 
-function getCursorQuery<T>(cursor: Cursor<T>): FilterQuery<T> {
+function getCursorQuery<T>(cursor: CursorDescription<T>): FilterQuery<T> {
   switch (cursor.length) {
     case 0: return {};
     case 1: return getSimpleCursorFilterQuery(cursor);
@@ -96,15 +92,19 @@ export function getPaginatedQuery<T>(
     .sort(sort);
 }
 
-export function getPaginationParams(req: Request, defaultLimit: number) {
+/** Attempts to extract "limit" and "cursor" from query parameters.
+ *  If no cursor param is present, returned cursor is `undefined`.
+*/
+export function getPaginationParams(req: { query: any }, defaultLimit: number) {
   const limit = getNumeric(req.query.limit as string) ?? defaultLimit;
   const cursor = req.query.cursor as string | undefined;
   return { limit, cursor };
 }
 
 export function getNextLink(url: string, cursor: any, limit: number) {
+  const cursorStr = cursor ? `cursor=${encodeURIComponent(cursor)}&` : '';
   return {
-    href: `${url}?cursor=${encodeURIComponent(cursor)}&limit=${limit}`,
+    href: `${url}?${cursorStr}limit=${limit}`,
   };
 }
 
@@ -126,6 +126,11 @@ export function getPaginationLinks<T, C>(
   };
 }
 
+/** Creates a Timestamp cursor as it will be represented in URL.
+ *  Accepts the object that will be used as reference to create the cursor.
+ *  (*Not* a "deserialized" cursor object!)
+ *  This does not URI-encode the result.
+ */
 export function serializeTimestampCursor(
   refObject: { createdAt: string | number | Date, id: any },
 ) {
@@ -137,19 +142,27 @@ export function serializeTimestampCursor(
 
 export function deserializeTimestampCursor(
   rawCursor?: string,
-): Cursor<{ createdAt: any, _id: any }> {
-  let cursorValues;
+): CursorDescription<{ createdAt?: Date, _id: any }> {
+  let id;
+  let date;
+
   if (rawCursor) {
-    const [createdAt, id] = rawCursor.split(',');
-    cursorValues = { createdAt, id };
+    const cursorValues = rawCursor.split(',');
+    const [createdAt] = cursorValues;
+    [,id] = cursorValues;
+    date = new Date(createdAt ?? '');
+
+    if (Number.isNaN(date.valueOf())) {
+      throw Error(`Could not parse date in cursor (Parsing "${createdAt}")`);
+    }
   }
 
   return [
     {
       field: 'createdAt',
-      value: cursorValues ? new Date(cursorValues.createdAt) : undefined,
+      value: date,
       order: 'desc',
     },
-    { field: '_id', value: cursorValues?.id },
+    { field: '_id', value: id },
   ];
 }
