@@ -609,6 +609,8 @@ components:
             href:
               type: string
               format: url
+            cursor:
+              type: string
 
   requestBodies:
     UserBody:

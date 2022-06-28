@@ -105,6 +105,7 @@ export function getNextLink(url: string, cursor: any, limit: number) {
   const cursorStr = cursor ? `cursor=${encodeURIComponent(cursor)}&` : '';
   return {
     href: `${url}?${cursorStr}limit=${limit}`,
+    cursor: cursor && encodeURIComponent(cursor),
   };
 }
 
