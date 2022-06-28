@@ -966,6 +966,9 @@
               "href": {
                 "type": "string",
                 "format": "url"
+              },
+              "cursor": {
+                "type": "string"
               }
             }
           }

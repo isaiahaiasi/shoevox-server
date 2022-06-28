@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
-import { validate } from '../middleware/validators';
 import UserService from '../services/userService';
+import { getTokenFromHeader, Provider } from '../utils/authHelpers';
 import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getNextLink, getPaginationParams } from '../utils/paginationHelpers';
@@ -41,12 +41,17 @@ const getUserById: RequestHandler = async (req, res, next) => {
   }
 };
 
+// TODO: Replace
 const createUserHandler: RequestHandler = async (req, res, next) => {
-  const { username, password } = req.body;
-  const user = await UserService.createUser({ username, password });
+  // get username, email (optionally), provider, and auth token
+  const { username, email } = req.body;
+  const provider = req.query.provider as Provider;
+  const token = getTokenFromHeader(req);
 
-  // TODO: I don't *think* save() actually returns anything other than created user
-  // (Pretty sure it throws on every fail scenario)
+  const user = await UserService.createUser({
+    username, email, provider, token,
+  });
+
   if (user) {
     res.json(user);
   } else {
@@ -58,7 +63,7 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
 
 // TODO: Might want to find a better place to put these route handler chains?
 const createUser = [
-  ...validate('UserBody'),
+  // ...validate('UserBody'),
   createUserHandler,
 ];
 

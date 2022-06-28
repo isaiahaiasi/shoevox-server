@@ -9,6 +9,7 @@ interface Env {
   PORT: number;
   NODE_ENV: string;
   MONGODB_URI?: string;
+  GOOGLE_CLIENT_ID?: string;
 }
 
 dotenv.config();
@@ -24,6 +25,7 @@ function initEnv() {
     PORT: getNumeric(process.env.PORT) ?? fallbacks.PORT,
     NODE_ENV: process.env.NODE_ENV ?? 'production',
     MONGODB_URI: process.env.MONGODB_URI,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   };
 }
 
