@@ -1,13 +1,13 @@
 import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument, Query } from 'mongoose';
 import Room, { IRoom } from '../models/Room';
-import { getSchemaProperties } from '../utils/apiSpecHelpers';
+import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 import { userDtoFields } from './userService';
 
 const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
-type RoomDto = typeof spec.components.schemas.Room.properties & { createdAt: Date };
+type RoomDto = SchemaProperties<'Room'> & { createdAt: Date };
 
 function getRoomDto(room: HydratedDocument<IRoom>): RoomDto {
   const roomDto = serializeDocument(room, roomDtoFields);

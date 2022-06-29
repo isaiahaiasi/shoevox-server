@@ -1,14 +1,13 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { components } from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument } from 'mongoose';
 import Comment, { IComment } from '../models/Comment';
-import { getSchemaProperties } from '../utils/apiSpecHelpers';
+import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 import { userDtoFields } from './userService';
 
-// TODO: Afraid I'm going to have to write actual types for these...
-const commentDtoFields = getSchemaProperties(spec.components.schemas.Comment);
-type CommentDto = { [Property in typeof commentDtoFields[number] ]: any } & { createdAt: Date };
+const commentDtoFields = getSchemaProperties(components.schemas.Comment);
+type CommentDto = SchemaProperties<'Comment'> & { createdAt: Date };
 
 function getCommentDto(comment: HydratedDocument<IComment>): CommentDto {
   const commentDto = serializeDocument(comment, commentDtoFields);
