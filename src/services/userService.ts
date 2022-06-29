@@ -1,6 +1,6 @@
+import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument, Query } from 'mongoose';
 import User, { IUser } from '../models/User';
-import spec from '../openapi.json';
 import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';

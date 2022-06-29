@@ -1,6 +1,6 @@
+import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument } from 'mongoose';
 import Comment, { IComment } from '../models/Comment';
-import spec from '../openapi.json';
 import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';

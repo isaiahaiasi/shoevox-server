@@ -1,5 +1,5 @@
+import json from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { RequestHandler, Router } from 'express';
-import json from '../openapi.json';
 import { getCleanPathsObject } from './apiSpecHelpers';
 import { wrapController } from './controllerWrapper';
 import { Method } from './typeHelpers';
