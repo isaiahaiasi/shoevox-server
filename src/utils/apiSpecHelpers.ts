@@ -1,3 +1,12 @@
+import { components } from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { FilterConditionally } from './typeHelpers';
+
+type ObjectSchema = FilterConditionally<typeof components.schemas, { properties: any }>;
+type ObjectSchemaName = keyof ObjectSchema;
+
+/** Type helper for spec component schemas */
+export type SchemaProperties<T extends ObjectSchemaName> = ObjectSchema[T]['properties'];
+
 /** Convert path string from OpenAPI style to Express style
  * @example "/users/{userid}" => "/users/:userid"
  */

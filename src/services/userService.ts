@@ -1,12 +1,13 @@
+import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument, Query } from 'mongoose';
 import User, { IUser } from '../models/User';
-import spec from '../openapi.json';
-import { getSchemaProperties } from '../utils/apiSpecHelpers';
+import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
 import { getGoogleUser, Provider } from '../utils/authHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
 export const userDtoFields = getSchemaProperties(spec.components.schemas.User);
+type UserDto = SchemaProperties<'User'> & { createdAt: Date };
 
 interface UserData {
   username?: string;
@@ -16,7 +17,7 @@ interface UserData {
 }
 
 function getUserDto(user: HydratedDocument<IUser>) {
-  return serializeDocument(user, userDtoFields);
+  return serializeDocument(user, userDtoFields) as UserDto;
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {

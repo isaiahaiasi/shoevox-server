@@ -10,6 +10,8 @@ import Like from './models/Like';
 import Room from './models/Room';
 import User from './models/User';
 
+// TODO: Update to conform to schema.
+
 // * Populate DB with dummy data
 
 const NUM_USERS = 10;

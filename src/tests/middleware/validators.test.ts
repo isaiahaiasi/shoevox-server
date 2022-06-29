@@ -1,5 +1,5 @@
+import schema from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { validators } from '../../middleware/validators';
-import schema from '../../openapi.json';
 
 describe('Validators conform to OpenAPI Schema', () => {
   test('A Validator exists for every property of every RequestBody', () => {
