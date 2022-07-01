@@ -1,9 +1,11 @@
 import { Request } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { getEnv } from '../config/env';
+import { OauthUserData, Provider } from '../types/auth';
 
-export const providers = ['google'] as const;
-export type Provider = typeof providers[number];
+type OauthGetters = {
+  [Property in Provider]: (token: string) => Promise<OauthUserData>
+};
 
 const googleClient = new OAuth2Client(getEnv().GOOGLE_CLIENT_ID);
 
@@ -23,9 +25,31 @@ export async function getGoogleUser(token: string) {
     audience: getEnv().GOOGLE_CLIENT_ID,
   });
 
-  const payload = ticket.getPayload();
+  const user = ticket.getPayload();
 
-  console.log('[auth] payload', payload);
+  if (!user) {
+    throw Error('Could not get google oauth user!');
+  }
 
-  return payload;
+  console.log('[auth] payload', user);
+
+  const oauthUserData = {
+    displayName: user.name!,
+    email: user.email!,
+    oauthId: user.sub!,
+  };
+
+  if (Object.values(oauthUserData).some((v) => v == null)) {
+    throw Error('Not all required user data included in google oauth response!');
+  }
+
+  return oauthUserData;
+}
+
+const oauthGetters: OauthGetters = {
+  google: getGoogleUser,
+};
+
+export async function getOauthUser(provider: Provider, token: string) {
+  return oauthGetters[provider](token);
 }

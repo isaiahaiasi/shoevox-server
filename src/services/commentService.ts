@@ -1,10 +1,10 @@
 import { components } from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument } from 'mongoose';
 import Comment, { IComment } from '../models/Comment';
+import { userDtoFields } from '../types/dtos';
 import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
-import { userDtoFields } from './userService';
 
 const commentDtoFields = getSchemaProperties(components.schemas.Comment);
 type CommentDto = SchemaProperties<'Comment'> & { createdAt: Date };

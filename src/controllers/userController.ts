@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import UserService from '../services/userService';
-import { getTokenFromHeader, Provider } from '../utils/authHelpers';
+import { Provider } from '../types/auth';
+import { getTokenFromHeader } from '../utils/authHelpers';
 import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getNextLink, getPaginationParams } from '../utils/paginationHelpers';
@@ -44,12 +45,12 @@ const getUserById: RequestHandler = async (req, res, next) => {
 // TODO: Replace
 const createUserHandler: RequestHandler = async (req, res, next) => {
   // get username, email (optionally), provider, and auth token
-  const { username, email } = req.body;
+  // const { username, email } = req.body;
   const provider = req.query.provider as Provider;
   const token = getTokenFromHeader(req);
 
   const user = await UserService.createUser({
-    username, email, provider, token,
+    provider, token,
   });
 
   if (user) {
