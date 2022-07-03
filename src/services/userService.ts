@@ -1,12 +1,16 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument, Query } from 'mongoose';
+import FederatedCredential from '../models/FederatedCredential';
 import User, { IUser } from '../models/User';
-import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
+import { Provider } from '../types/auth';
+import { UserDto, userDtoFields } from '../types/dtos';
+import { getOauthUser } from '../utils/authHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-export const userDtoFields = getSchemaProperties(spec.components.schemas.User);
-type UserDto = SchemaProperties<'User'> & { createdAt: Date };
+interface CreateUserRequestData {
+  token: string;
+  provider: Provider;
+}
 
 function getUserDto(user: HydratedDocument<IUser>) {
   return serializeDocument(user, userDtoFields) as UserDto;
@@ -42,8 +46,37 @@ const getUserById = async (id: string) => {
   return getUserDto(user);
 };
 
-const createUser = async (userData: { username: string, password: string }) => {
-  const user = await new User(userData).save();
+// Get user data from oauth provider
+// See if federated credentials already exist
+// If so, return the associated user
+// If not, create new user and federated credentials records and return new user
+const createUser = async ({ provider, token }: CreateUserRequestData) => {
+  const oauthUserData = await getOauthUser(provider, token);
+
+  const initialFedCred = await FederatedCredential.findOne({
+    oauthId: oauthUserData.oauthId,
+    provider,
+  });
+
+  if (initialFedCred) {
+    const user = await User.findById(initialFedCred.user);
+    if (!user) {
+      throw Error('Could not find user associated with OAuth credentials!');
+    }
+    return getUserDto(user);
+  }
+
+  const { displayName, email, oauthId } = oauthUserData;
+
+  const user = await new User({ username: displayName, email }).save();
+
+  await new FederatedCredential({
+    // eslint-disable-next-line no-underscore-dangle
+    user: user._id.toString(),
+    oauthId,
+    provider,
+  }).save();
+
   return getUserDto(user);
 };
 
