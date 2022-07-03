@@ -7,6 +7,8 @@ type OauthGetters = {
   [Property in Provider]: (token: string) => Promise<OauthUserData>
 };
 
+const OAUTH_PROVIDER_HEADER_NAME = 'X-Oauth-Provider';
+
 const googleClient = new OAuth2Client(getEnv().GOOGLE_CLIENT_ID);
 
 export function getTokenFromHeader(req: Request): string {
@@ -17,6 +19,16 @@ export function getTokenFromHeader(req: Request): string {
   }
 
   return header;
+}
+
+export function getProvider(req: Request): Provider {
+  const provider = req.headers[OAUTH_PROVIDER_HEADER_NAME.toLowerCase()];
+
+  if (!provider) {
+    throw Error('Could not find OAuth provider');
+  }
+
+  return provider as Provider;
 }
 
 export async function getGoogleUser(token: string) {

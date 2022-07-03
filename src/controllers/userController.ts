@@ -42,7 +42,6 @@ const getUserById: RequestHandler = async (req, res, next) => {
   }
 };
 
-// TODO: Replace
 const createUserHandler: RequestHandler = async (req, res, next) => {
   // get username, email (optionally), provider, and auth token
   // const { username, email } = req.body;
