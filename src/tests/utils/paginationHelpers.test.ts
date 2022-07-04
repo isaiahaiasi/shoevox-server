@@ -42,7 +42,7 @@ describe('getNextLink', () => {
     const cursor = 'abcd1234';
     const limit = 20;
 
-    expect(getNextLink(url, cursor, limit)).toEqual({ href });
+    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor });
   });
 
   test('undefined cursor is not included in query output', () => {
@@ -58,7 +58,7 @@ describe('getNextLink', () => {
     const cursor = ['lmno'];
     const limit = 5;
 
-    expect(getNextLink(url, cursor, limit)).toEqual({ href });
+    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor: 'lmno' });
   });
 
   test('handles array-based cursor (of length >1)', () => {
@@ -67,7 +67,7 @@ describe('getNextLink', () => {
     const cursor = ['abcd', 1234];
     const limit = 5;
 
-    expect(getNextLink(url, cursor, limit)).toEqual({ href });
+    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor: 'abcd%2C1234' });
   });
 });
 
@@ -85,6 +85,7 @@ describe('getPaginationLinks', () => {
     expect(getPaginationLinks(data, url, limit, getCursor)).toEqual({
       next: {
         href: 'gopher://mysite.com/resource?cursor=2%2C2022-06-13T07%3A21%3A24.519Z&limit=3',
+        cursor: '2%2C2022-06-13T07%3A21%3A24.519Z',
       },
     });
   });
