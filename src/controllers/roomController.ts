@@ -1,4 +1,6 @@
 import { RequestHandler } from 'express';
+import { authenticateUser } from '../middleware/authHandlers';
+import { validate } from '../middleware/validators';
 import commentService from '../services/commentService';
 import roomService from '../services/roomService';
 import { createResourceNotFoundError } from '../utils/errorResponse';
@@ -43,7 +45,6 @@ const getCommentsByRoomId: RequestHandler = async (req, res) => {
 
   // get "next" link
   const baseUrl = getFullRequestUrl(req, false);
-
   const links = getPaginationLinks(comments, baseUrl, limit, serializeTimestampCursor);
 
   res.json({
@@ -53,8 +54,29 @@ const getCommentsByRoomId: RequestHandler = async (req, res) => {
   });
 };
 
+const createCommentHandler: RequestHandler = async (req, res) => {
+  const commentData = {
+    room: req.params.roomid,
+    user: res.locals.userId,
+    content: req.body.content,
+  };
+
+  const comment = await commentService.createComment(commentData);
+
+  res.json({
+    data: comment,
+  });
+};
+
+const createComment = [
+  ...validate('CommentBody'),
+  authenticateUser,
+  createCommentHandler,
+];
+
 export default {
   getRooms,
   getRoomById,
   getCommentsByRoomId,
+  createComment,
 };

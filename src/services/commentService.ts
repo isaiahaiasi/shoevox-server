@@ -9,6 +9,12 @@ import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '.
 const commentDtoFields = getSchemaProperties(components.schemas.Comment);
 type CommentDto = SchemaProperties<'Comment'> & { createdAt: Date };
 
+type RequiredCommentInputs = {
+  room: string,
+  user: string,
+  content: string,
+};
+
 function getCommentDto(comment: HydratedDocument<IComment>): CommentDto {
   const commentDto = serializeDocument(comment, commentDtoFields);
   commentDto.user = filterObject(commentDto.user, userDtoFields);
@@ -30,6 +36,15 @@ async function getCommentsByRoomId(roomid: string, limit: number, rawCursor?: an
   return comments.map(getCommentDto);
 }
 
+async function createComment({ room, user, content }: RequiredCommentInputs) {
+  const comment = await new Comment({ room, content, user })
+    .save()
+    .then((res) => res.populate('user'));
+
+  return getCommentDto(comment);
+}
+
 export default {
+  createComment,
   getCommentsByRoomId,
 };
