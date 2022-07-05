@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-interface ILike {
+export interface ILike {
   user: Schema.Types.ObjectId;
   room: Schema.Types.ObjectId;
 }

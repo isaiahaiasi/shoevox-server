@@ -43,8 +43,6 @@ export async function getGoogleUser(token: string) {
     throw Error('Could not get google oauth user!');
   }
 
-  console.log('[auth] payload', user);
-
   const oauthUserData = {
     displayName: user.name!,
     email: user.email!,
