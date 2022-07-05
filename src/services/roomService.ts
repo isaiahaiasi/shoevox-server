@@ -39,6 +39,15 @@ const getRooms = async (limit: number, rawCursor?: string) => {
   return rooms.map(getRoomDto);
 };
 
+// TODO: This isn't very DRY... but idk yet how I want to make the generic interface
+const getRoomsByUserId = async (userId: string, limit: number, rawCursor?: string) => {
+  const cursor = deserializeTimestampCursor(rawCursor);
+  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const query = getPaginatedQuery(Room, paginationInfo, { creator: userId });
+  const rooms = await completeQuery(query);
+  return rooms.map(getRoomDto);
+};
+
 const getRoomById = async (id: string) => {
   const room = await completeQuery(Room.findById(id));
 
@@ -64,4 +73,5 @@ export default {
   getRooms,
   getRoomById,
   createRoom,
+  getRoomsByUserId,
 };
