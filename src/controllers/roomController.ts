@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
-import { authenticateUser } from '../middleware/authHandlers';
+import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
 import { validate } from '../middleware/validators';
-import commentService from '../services/commentService';
 import roomService from '../services/roomService';
 import { createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
@@ -36,47 +35,29 @@ const getRoomById: RequestHandler = async (req, res, next) => {
   }
 };
 
-const getCommentsByRoomId: RequestHandler = async (req, res) => {
-  const { roomid } = req.params;
-  const { limit, cursor: rawCursor } = getPaginationParams(req, 5);
-
-  // get data
-  const comments = await commentService.getCommentsByRoomId(roomid, limit, rawCursor);
-
-  // get "next" link
-  const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(comments, baseUrl, limit, serializeTimestampCursor);
-
-  res.json({
-    count: comments.length,
-    data: comments,
-    links,
-  });
-};
-
-const createCommentHandler: RequestHandler = async (req, res) => {
-  const commentData = {
-    room: req.params.roomid,
-    user: res.locals.userId,
-    content: req.body.content,
+const createRoomHandler: RequestHandler = async (req, res) => {
+  // TODO: Get the multipart form data for the room
+  const roomData = {
+    creator: res.locals.userId,
+    title: req.body.title,
   };
 
-  const comment = await commentService.createComment(commentData);
+  const room = await roomService.createRoom(roomData);
 
   res.json({
-    data: comment,
+    data: room,
   });
 };
 
-const createComment = [
-  ...validate('CommentBody'),
+const createRoom = [
+  ...validate('RoomBody'),
   authenticateUser,
-  createCommentHandler,
+  authorizeSameUser((req) => req.params.userid),
+  createRoomHandler,
 ];
 
 export default {
   getRooms,
   getRoomById,
-  getCommentsByRoomId,
-  createComment,
+  createRoom,
 };

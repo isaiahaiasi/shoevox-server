@@ -9,6 +9,11 @@ import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '.
 const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
 type RoomDto = SchemaProperties<'Room'> & { createdAt: Date };
 
+interface RequiredRoomInputs {
+  title: string;
+  creator: string;
+}
+
 function getRoomDto(room: HydratedDocument<IRoom>): RoomDto {
   const roomDto = serializeDocument(room, roomDtoFields);
   roomDto.creator = filterObject(roomDto.creator, userDtoFields);
@@ -44,7 +49,19 @@ const getRoomById = async (id: string) => {
   return getRoomDto(room);
 };
 
+const createRoom = async ({ title, creator }: RequiredRoomInputs) => {
+  // TODO: the actual room data...
+  const roomData = {
+    title,
+    creator,
+    url: 'random-url-example',
+  };
+  const room = await new Room(roomData).save().then((res) => res.populate('creator'));
+  return getRoomDto(room);
+};
+
 export default {
   getRooms,
   getRoomById,
+  createRoom,
 };

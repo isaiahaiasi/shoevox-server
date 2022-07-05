@@ -14,6 +14,7 @@ const roomSchema = new Schema<IRoom>({
   title: {
     type: String, required: true, minLength: 3, maxLength: 100,
   },
+  // TODO: this should probably be a Virtual
   url: { type: String, required: true },
 }, {
   timestamps: true,
