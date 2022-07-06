@@ -72,9 +72,26 @@ const createRoom = [
   createRoomHandler,
 ];
 
+const deleteRoomHandler: RequestHandler = async (req, res) => {
+  const { roomid } = req.params;
+  const { userId } = res.locals;
+
+  const deletedRoom = await roomService.deleteRoom(roomid, userId);
+
+  res.json({
+    data: deletedRoom,
+  });
+};
+
+const deleteRoom: RequestHandler[] = [
+  authenticateUser,
+  deleteRoomHandler,
+];
+
 export default {
+  createRoom,
+  deleteRoom,
   getRooms,
   getRoomById,
-  createRoom,
   getRoomsByUserId,
 };

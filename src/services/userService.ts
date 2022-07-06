@@ -80,8 +80,27 @@ const createUser = async ({ provider, token }: CreateUserRequestData) => {
   return getUserDto(user);
 };
 
+const deleteUser = async (userId: string) => {
+  // Need to delete user record AND all associated Federated Credentials
+  const [deletedUser, credentialsDeleteResult] = await Promise.all([
+    User.findByIdAndDelete(userId).exec(),
+    FederatedCredential.deleteMany({ user: userId }).exec(),
+  ]);
+
+  if (!deletedUser) {
+    throw Error('Could not find user to delete!');
+  }
+
+  if (credentialsDeleteResult.deletedCount === 0) {
+    console.warn('Could not find any credentials associated with deleted user:', deletedUser);
+  }
+
+  return getUserDto(deletedUser);
+};
+
 export default {
+  createUser,
+  deleteUser,
   getUsers,
   getUserById,
-  createUser,
 };

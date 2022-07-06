@@ -4,16 +4,16 @@ import { body, validationResult } from 'express-validator';
 export const validators = {
   UserBody: {
     username: body('username').trim().isLength({ min: 3, max: 15 }),
-    passwordConfirm: body('passwordConfirm').exists(),
-    password: body('password').isLength({ min: 8 }).custom(
-      (value, { req }) => {
-        if (value !== req.body.passwordConfirm) {
-          throw new Error('Passwords must match!');
-        } else {
-          return true;
-        }
-      },
-    ),
+    // passwordConfirm: body('passwordConfirm').exists(),
+    // password: body('password').isLength({ min: 8 }).custom(
+    //   (value, { req }) => {
+    //     if (value !== req.body.passwordConfirm) {
+    //       throw new Error('Passwords must match!');
+    //     } else {
+    //       return true;
+    //     }
+    //   },
+    // ),
   },
 
   RoomBody: {

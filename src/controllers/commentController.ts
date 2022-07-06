@@ -9,10 +9,8 @@ const getCommentsByRoomId: RequestHandler = async (req, res) => {
   const { roomid } = req.params;
   const { limit, cursor: rawCursor } = getPaginationParams(req, 5);
 
-  // get data
   const comments = await commentService.getCommentsByRoomId(roomid, limit, rawCursor);
 
-  // get "next" link
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(comments, baseUrl, limit, serializeTimestampCursor);
 
@@ -37,13 +35,30 @@ const createCommentHandler: RequestHandler = async (req, res) => {
   });
 };
 
-const createComment = [
+const createComment: RequestHandler[] = [
   ...validate('CommentBody'),
   authenticateUser,
   createCommentHandler,
 ];
 
+const deleteCommentHandler: RequestHandler = async (req, res) => {
+  const { commentid } = req.params;
+  const { userId } = res.locals;
+
+  const deletedComment = await commentService.deleteComment(commentid, userId);
+
+  return res.json({
+    data: deletedComment,
+  });
+};
+
+const deleteComment: RequestHandler[] = [
+  authenticateUser,
+  deleteCommentHandler,
+];
+
 export default {
-  getCommentsByRoomId,
   createComment,
+  deleteComment,
+  getCommentsByRoomId,
 };

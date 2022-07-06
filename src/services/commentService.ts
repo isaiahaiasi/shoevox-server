@@ -44,7 +44,19 @@ async function createComment({ room, user, content }: RequiredCommentInputs) {
   return getCommentDto(comment);
 }
 
+async function deleteComment(commentId: string, userId: string) {
+  // TODO: not a fan of implicit authorization
+  const deletedComment = await Comment.findOneAndDelete({ _id: commentId, user: userId });
+
+  if (!deletedComment) {
+    throw Error(`Could not find Comment with id ${commentId} to delete!`);
+  }
+
+  return getCommentDto(deletedComment);
+}
+
 export default {
   createComment,
+  deleteComment,
   getCommentsByRoomId,
 };

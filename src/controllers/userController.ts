@@ -1,26 +1,25 @@
 import { RequestHandler } from 'express';
-import UserService from '../services/userService';
+import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
+import { validate } from '../middleware/validators';
+import userService from '../services/userService';
 import { Provider } from '../types/auth';
 import { getTokenFromHeader } from '../utils/authHelpers';
 import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getNextLink, getPaginationParams } from '../utils/paginationHelpers';
-import { ApiResponseLinks, MethodUppercase } from '../utils/typeHelpers';
+import { getPaginationLinks, getPaginationParams } from '../utils/paginationHelpers';
+import { MethodUppercase } from '../utils/typeHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {
   const { limit, cursor } = getPaginationParams(req, 5);
 
-  const users = await UserService.getUsers(limit, cursor as string);
+  const users = await userService.getUsers(limit, cursor as string);
 
-  // Get the "next" link
-  const links: ApiResponseLinks = {};
-  if (users.length === limit) { // (If users < limit, we know there's no next)
-    links.next = getNextLink(
-      getFullRequestUrl(req, false),
-      users[users.length - 1].username,
-      limit,
-    );
-  }
+  const links = getPaginationLinks(
+    users,
+    getFullRequestUrl(req, false),
+    limit,
+    (user) => user.username,
+  );
 
   res.json({
     data: users,
@@ -31,7 +30,7 @@ const getUsers: RequestHandler = async (req, res) => {
 const getUserById: RequestHandler = async (req, res, next) => {
   const { userid } = req.params;
 
-  const user = await UserService.getUserById(userid);
+  const user = await userService.getUserById(userid);
 
   if (user) {
     res.json(user);
@@ -48,7 +47,7 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
   const provider = req.query.provider as Provider;
   const token = getTokenFromHeader(req);
 
-  const user = await UserService.createUser({
+  const user = await userService.createUser({
     provider, token,
   });
 
@@ -61,14 +60,31 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
   }
 };
 
-// TODO: Might want to find a better place to put these route handler chains?
 const createUser = [
-  // ...validate('UserBody'),
+  ...validate('UserBody'),
   createUserHandler,
 ];
 
+const deleteUserHandler: RequestHandler = async (req, res) => {
+  const { userid } = req.params;
+
+  const deletedUser = await userService.deleteUser(userid);
+
+  res.json({
+    data: deletedUser,
+  });
+};
+
+// TODO: Might want to require a Req Body with password confirm?
+const deleteUser: RequestHandler[] = [
+  authenticateUser,
+  authorizeSameUser((req) => req.params.userid),
+  deleteUserHandler,
+];
+
 export default {
+  createUser,
+  deleteUser,
   getUsers,
   getUserById,
-  createUser,
 };

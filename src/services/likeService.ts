@@ -41,9 +41,13 @@ const getLikesByRoom = async (room: string, limit: number, rawCursor?: string) =
 const deleteLike = async (likeId: string, userId: string) => {
   // TODO: right now, authorization is implicit in this step to avoid multiple DB Queries
   // I'd like to find a better solution at some point...
-  const deleteResult = await Like.deleteOne({ _id: likeId, user: userId });
+  const deletedLike = await Like.findOneAndDelete({ _id: likeId, user: userId });
 
-  return deleteResult.deletedCount > 0;
+  if (!deletedLike) {
+    throw Error(`Could not find Like with id ${likeId} to delete!`);
+  }
+
+  return getLikeDto(deletedLike);
 };
 
 export default {

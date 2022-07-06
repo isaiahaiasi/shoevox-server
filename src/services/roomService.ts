@@ -69,9 +69,21 @@ const createRoom = async ({ title, creator }: RequiredRoomInputs) => {
   return getRoomDto(room);
 };
 
+const deleteRoom = async (roomId: string, userId: string) => {
+  // TODO: Explicit authorization
+  const deletedRoom = await Room.findOneAndDelete({ _id: roomId, creator: userId }).exec();
+
+  if (!deletedRoom) {
+    throw Error(`Could not find Room with id ${roomId} to delete!`);
+  }
+
+  return getRoomDto(deletedRoom);
+};
+
 export default {
+  createRoom,
+  deleteRoom,
   getRooms,
   getRoomById,
-  createRoom,
   getRoomsByUserId,
 };
