@@ -20,7 +20,6 @@ const getRooms: RequestHandler = async (req, res) => {
   });
 };
 
-// TODO: This isn't very DRY... but idk yet how I want to make the generic interface
 const getRoomsByUserId: RequestHandler = async (req, res) => {
   const { limit, cursor: rawCursor } = getPaginationParams(req, 3);
   const { userid } = req.params;
@@ -88,10 +87,32 @@ const deleteRoom: RequestHandler[] = [
   deleteRoomHandler,
 ];
 
+const updateRoomHandler: RequestHandler = async (req, res) => {
+  const roomData = {
+    id: req.params.roomid,
+    creator: res.locals.userId,
+    title: req.body.title,
+  };
+
+  const updatedRoom = roomService.updateRoom(roomData);
+
+  res.json({
+    data: updatedRoom,
+  });
+};
+
+const updateRoom: RequestHandler[] = [
+  ...validate('RoomBody'),
+  authenticateUser,
+  authorizeSameUser((req) => req.body.creator),
+  updateRoomHandler,
+];
+
 export default {
   createRoom,
   deleteRoom,
   getRooms,
   getRoomById,
   getRoomsByUserId,
+  updateRoom,
 };

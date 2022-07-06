@@ -80,10 +80,21 @@ const deleteRoom = async (roomId: string, userId: string) => {
   return getRoomDto(deletedRoom);
 };
 
+const updateRoom = async (roomData: RequiredRoomInputs & { id: string }) => {
+  const updatedRoom = await Room.findByIdAndUpdate(roomData.id, roomData).exec();
+
+  if (!updatedRoom) {
+    throw Error(`Could not find Room with id ${roomData.id} to delete!`);
+  }
+
+  return getRoomDto(updatedRoom);
+};
+
 export default {
   createRoom,
   deleteRoom,
   getRooms,
   getRoomById,
   getRoomsByUserId,
+  updateRoom,
 };
