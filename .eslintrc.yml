@@ -17,6 +17,7 @@ rules:
   # Just don't like these rules
   "import/prefer-default-export": 0
   "no-plusplus": 0
+  "no-underscore-dangle": 0
 
   # TODO: remove this rule override
   "no-console": 0

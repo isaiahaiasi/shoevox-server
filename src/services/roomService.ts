@@ -63,9 +63,10 @@ const createRoom = async ({ title, creator }: RequiredRoomInputs) => {
   const roomData = {
     title,
     creator,
-    url: 'random-url-example',
   };
+
   const room = await new Room(roomData).save().then((res) => res.populate('creator'));
+
   return getRoomDto(room);
 };
 

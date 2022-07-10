@@ -2,29 +2,30 @@ import mongoose from 'mongoose';
 import { getEnv } from './env';
 
 export async function initializeMongoose() {
-  const { MONGODB_URI, NODE_ENV } = getEnv();
+  const { MONGODB_URI, DEBUG_DB } = getEnv();
 
   if (!MONGODB_URI) {
     throw Error(
-      'Could not establish MongoDB connection.\n'
+      '[db]: Could not establish MongoDB connection.\n'
       + 'No connection URI provided.',
     );
   }
 
-  if (NODE_ENV === 'development') {
+  if (DEBUG_DB) {
+    console.log(process.env.DEBUG_DB);
     mongoose.set('debug', true);
   }
 
   mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error('Could not connect to database server.');
+    console.error('[db]: Could not connect to database server.');
     console.error(err);
   });
 
   const db = mongoose.connection;
 
   db
-    .on('error', () => console.error('mongo connection error'))
-    .on('open', () => console.log('MongoDB connection established'));
+    .on('error', () => console.error('[db]: MongoDB connection error'))
+    .on('open', () => console.log('[db]: MongoDB connection established'));
 
   return db;
 }

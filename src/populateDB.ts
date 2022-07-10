@@ -10,8 +10,6 @@ import Like from './models/Like';
 import Room from './models/Room';
 import User from './models/User';
 
-// TODO: Update to conform to schema.
-
 // * Populate DB with dummy data
 
 const NUM_USERS = 10;
@@ -40,11 +38,9 @@ function getUsers() {
 
   for (let i = 0; i < NUM_USERS; i++) {
     // Generate our own IDs so we don't have to await db updates for dependencies
-    // (eg, we can't make Rooms until we have the _ids for Users)
     const _id = faker.database.mongodbObjectId();
     const username = faker.unique(() => truncate(faker.internet.userName(), 15));
-    const password = `fake${faker.unique(() => faker.random.alphaNumeric(10))}`;
-    users.push({ username, password, _id });
+    users.push({ username, _id });
   }
 
   return users;
@@ -53,16 +49,13 @@ function getUsers() {
 function getRooms({ users }: RefDependencies) {
   const rooms = [];
   for (let i = 0; i < users.length; i++) {
-    // Generate a random number of rooms per user (with some )
+    // Generate a random number of rooms per user
     const userRoomsCount = randInt(0, MAX_ROOMS_PER_USER);
     for (let j = 0; j < userRoomsCount; j++) {
       const _id = faker.database.mongodbObjectId();
       const title = `${faker.hacker.adjective()} ${faker.word.adjective()} ${faker.word.noun()}`;
-      const url = 'https://shoevox.isaiahaiasi.com/dummy-room-url';
       const creator = users[i]._id;
-      rooms.push({
-        _id, title, url, creator,
-      });
+      rooms.push({ _id, title, creator });
     }
   }
 
