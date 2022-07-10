@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon src/app.ts",
-    "lint": "eslint",
+    "lint": "eslint .",
     "populate": "npm run build && node dist/populateDB.js",
     "start": "npm run build && node dist/app.js",
     "test": "jest",
