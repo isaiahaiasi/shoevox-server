@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body, query, validationResult } from 'express-validator';
 
 export const validators = {
   UserBody: {
@@ -22,6 +22,11 @@ export const validators = {
 
   CommentBody: {
     content: body('content').trim().isLength({ min: 3, max: 140 }),
+  },
+
+  FriendshipQueryRequest: {
+    is: query('is').trim().isIn(['recipient', 'requester']),
+    status: query('status').trim().optional().isIn(['ACCEPTED', 'PENDING', 'REJECTED']),
   },
 
   FriendRequestUpdateBody: {

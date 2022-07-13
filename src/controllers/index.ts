@@ -1,4 +1,5 @@
 import commentController from './commentController';
+import friendshipController from './friendshipController';
 import likeController from './likeController';
 import roomController from './roomController';
 import userController from './userController';
@@ -8,4 +9,5 @@ export default {
   ...roomController,
   ...commentController,
   ...likeController,
+  ...friendshipController,
 };

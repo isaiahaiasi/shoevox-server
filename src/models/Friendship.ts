@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
 
-interface IFriendship {
+export interface IFriendship {
   requester: Schema.Types.ObjectId;
   recipient: Schema.Types.ObjectId;
   status: 'ACCEPTED' | 'PENDING' | 'REJECTED';
