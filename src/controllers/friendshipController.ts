@@ -41,9 +41,30 @@ const getFriendships = [
   getFriendshipsHandler,
 ];
 
-// const createFriendship: RequestHandler = (req, res, next) => {
+const createFriendshipHandler: RequestHandler = async (req, res, next) => {
+  const { userid: recipient } = req.params;
+  const { userId: requester } = res.locals;
 
-// };
+  if (recipient === requester) {
+    next({
+      status: 400,
+      msg: 'Cannot request friendship from yourself!',
+    });
+  }
+
+  const friendshipData = { recipient, requester };
+
+  const friendship = await friendshipService.createFriendship(friendshipData);
+
+  res.json({
+    data: friendship,
+  });
+};
+
+const createFriendship = [
+  authenticateUser,
+  createFriendshipHandler,
+];
 
 // const updateFriendship: RequestHandler = (req, res, next) => {
 
@@ -54,8 +75,8 @@ const getFriendships = [
 // };
 
 export default {
+  createFriendshipByUserId: createFriendship,
   getFriendshipsByUserId: getFriendships,
   // updateFriendship,
-  // createFriendship,
   // deleteFriendship,
 };

@@ -53,6 +53,16 @@ async function getFriendships(friendshipData: {
   return friendships.map(getFriendshipDto);
 }
 
+async function createFriendship(friendshipData: { requester: string, recipient: string }) {
+  const friendship = await Friendship
+    .findOneAndUpdate(friendshipData, {}, { upsert: true, new: true })
+    .populate('recipient')
+    .exec();
+
+  return getFriendshipDto(friendship);
+}
+
 export default {
   getFriendships,
+  createFriendship,
 };
