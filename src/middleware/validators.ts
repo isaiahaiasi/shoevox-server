@@ -1,45 +1,28 @@
 import { RequestHandler } from 'express';
 import { body, query, validationResult } from 'express-validator';
 
-export const validators = {
-  UserBody: {
-    username: body('username').trim().isLength({ min: 3, max: 15 }),
-    // passwordConfirm: body('passwordConfirm').exists(),
-    // password: body('password').isLength({ min: 8 }).custom(
-    //   (value, { req }) => {
-    //     if (value !== req.body.passwordConfirm) {
-    //       throw new Error('Passwords must match!');
-    //     } else {
-    //       return true;
-    //     }
-    //   },
-    // ),
-  },
+export const validatorGroups = {
+  UserBody: [
+    body('username').trim().isLength({ min: 3, max: 15 }),
+  ],
 
-  RoomBody: {
-    title: body('title').trim().isLength({ min: 3, max: 100 }),
-  },
+  RoomBody: [
+    body('title').trim().isLength({ min: 3, max: 100 }),
+  ],
 
-  CommentBody: {
-    content: body('content').trim().isLength({ min: 3, max: 140 }),
-  },
+  CommentBody: [
+    body('content').trim().isLength({ min: 3, max: 140 }),
+  ],
 
-  FriendshipQueryRequest: {
-    is: query('is').trim().isIn(['recipient', 'requester']),
-    status: query('status').trim().optional().isIn(['ACCEPTED', 'PENDING', 'REJECTED']),
-  },
+  FriendRequestUpdateBody: [
+    body('status').isIn(['ACCEPTED', 'REJECTED']),
+    body('is').isIn(['recipient', 'requester']),
+  ],
 
-  FriendRequestUpdateBody: {
-    status: body('status').custom(
-      (value) => {
-        if (['ACCEPTED', 'REJECTED'].indexOf(value) === -1) {
-          throw new Error('Status must be either "ACCEPTED" or "REJECTED"');
-        }
-
-        return true;
-      },
-    ),
-  },
+  FriendshipQueryRequest: [
+    query('is').isIn(['recipient', 'requester']),
+    query('status').optional().isIn(['ACCEPTED', 'PENDING', 'REJECTED']),
+  ],
 };
 
 const validationResolver: RequestHandler = (req, res, next) => {
@@ -52,10 +35,10 @@ const validationResolver: RequestHandler = (req, res, next) => {
 };
 
 /**
- * Create a middleware chain consisting of the given validator handlers
+ * Create a middleware chain consisting of the given ValidationChains
  * and the final validation "resolver", which checks errors & calls next().
  */
-export const validate = (requestBodyName: keyof typeof validators) => {
-  const validationHandlers = Object.values(validators[requestBodyName]);
-  return [...validationHandlers, validationResolver];
+// eslint-disable-next-line arrow-body-style
+export const validate = (requestBodyName: keyof typeof validatorGroups) => {
+  return [...validatorGroups[requestBodyName], validationResolver];
 };
