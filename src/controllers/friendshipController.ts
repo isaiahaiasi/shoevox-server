@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
 import { validate } from '../middleware/validators';
 import friendshipService from '../services/friendshipService';
+import { createErrorResponse } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
@@ -46,10 +47,11 @@ const createFriendshipHandler: RequestHandler = async (req, res, next) => {
   const { userId: requester } = res.locals;
 
   if (recipient === requester) {
-    next({
+    next(createErrorResponse({
       status: 400,
       msg: 'Cannot request friendship from yourself!',
-    });
+    }));
+    return;
   }
 
   const friendshipData = { recipient, requester };
@@ -66,17 +68,45 @@ const createFriendship = [
   createFriendshipHandler,
 ];
 
-// const updateFriendship: RequestHandler = (req, res, next) => {
+const updateFriendshipHandler: RequestHandler = async (req, res, next) => {
+  const { friendshipid } = req.params;
+  const { is, status } = req.body;
 
-// };
+  const requestData = {
+    friendshipId: friendshipid,
+    userId: res.locals.userId,
+    userIs: is as 'recipient' | 'requester', // validation handled prior
+    status: status as 'ACCEPTED' | 'REJECTED',
+  };
+
+  const friendship = await friendshipService.updateFriendship(requestData);
+
+  if (!friendship) {
+    next(createErrorResponse({
+      msg: 'Could not find record of friendship.',
+      status: 404,
+    }));
+    return;
+  }
+
+  res.json({
+    data: friendship,
+  });
+};
+
+const updateFriendship = [
+  ...validate('FriendRequestUpdateBody'),
+  authenticateUser,
+  updateFriendshipHandler,
+];
 
 // const deleteFriendship: RequestHandler = (req, res, next) => {
 
 // };
 
 export default {
-  createFriendshipByUserId: createFriendship,
-  getFriendshipsByUserId: getFriendships,
-  // updateFriendship,
+  createFriendship,
+  getFriendships,
+  updateFriendship,
   // deleteFriendship,
 };

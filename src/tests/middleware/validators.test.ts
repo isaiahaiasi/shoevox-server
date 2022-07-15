@@ -1,5 +1,5 @@
 import schema from '@isaiahaiasi/voxelatlas-spec/schema.json';
-import { validators } from '../../middleware/validators';
+import { validatorGroups } from '../../middleware/validators';
 
 describe('Validators conform to OpenAPI Schema', () => {
   test('A Validator exists for every property of every RequestBody', () => {
@@ -8,11 +8,11 @@ describe('Validators conform to OpenAPI Schema', () => {
 
       // TODO: Figure out types
       // @ts-ignore
-      expect(validators[bodyName]).not.toBeUndefined();
+      expect(validatorGroups[bodyName]).not.toBeUndefined();
 
       Object.keys(bodyProperties).forEach((bodyProperty) => {
         // @ts-ignore
-        expect(validators[bodyName][bodyProperty]).not.toBeUndefined();
+        expect(validatorGroups[bodyName][bodyProperty]).not.toBeUndefined();
       });
     });
   });

@@ -1,9 +1,11 @@
 import { model, Schema } from 'mongoose';
 
+export type FriendshipStatus = 'ACCEPTED' | 'PENDING' | 'REJECTED';
+
 export interface IFriendship {
   requester: Schema.Types.ObjectId;
   recipient: Schema.Types.ObjectId;
-  status: 'ACCEPTED' | 'PENDING' | 'REJECTED';
+  status: FriendshipStatus;
 }
 
 const friendshipSchema = new Schema<IFriendship>({

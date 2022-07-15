@@ -2,27 +2,30 @@ import { RequestHandler } from 'express';
 import { body, query, validationResult } from 'express-validator';
 
 export const validatorGroups = {
-  UserBody: [
-    body('username').trim().isLength({ min: 3, max: 15 }),
-  ],
+  UserBody: {
+    username: body('username').trim().isLength({ min: 3, max: 15 }),
+  },
 
-  RoomBody: [
-    body('title').trim().isLength({ min: 3, max: 100 }),
-  ],
+  RoomBody: {
+    title: body('title').trim().isLength({ min: 3, max: 100 }),
+  },
 
-  CommentBody: [
-    body('content').trim().isLength({ min: 3, max: 140 }),
-  ],
+  CommentBody: {
+    content: body('content').trim().isLength({ min: 3, max: 140 }),
+  },
 
-  FriendRequestUpdateBody: [
-    body('status').isIn(['ACCEPTED', 'REJECTED']),
-    body('is').isIn(['recipient', 'requester']),
-  ],
+  FriendRequestUpdateBody: {
+    is: body('is').isIn(['recipient', 'requester']),
+    status: body('status').isIn(['ACCEPTED', 'REJECTED']).custom(
+      // Only the recipient may accept the request
+      (status, { req }) => req.body.is === 'recipient' || status !== 'ACCEPTED',
+    ),
+  },
 
-  FriendshipQueryRequest: [
-    query('is').isIn(['recipient', 'requester']),
-    query('status').optional().isIn(['ACCEPTED', 'PENDING', 'REJECTED']),
-  ],
+  FriendshipQueryRequest: {
+    is: query('is').isIn(['recipient', 'requester']),
+    status: query('status').optional().isIn(['ACCEPTED', 'PENDING', 'REJECTED']),
+  },
 };
 
 const validationResolver: RequestHandler = (req, res, next) => {
@@ -40,5 +43,6 @@ const validationResolver: RequestHandler = (req, res, next) => {
  */
 // eslint-disable-next-line arrow-body-style
 export const validate = (requestBodyName: keyof typeof validatorGroups) => {
-  return [...validatorGroups[requestBodyName], validationResolver];
+  const validationChains = Object.values(validatorGroups[requestBodyName]);
+  return [...validationChains, validationResolver];
 };

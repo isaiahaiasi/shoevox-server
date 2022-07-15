@@ -54,6 +54,11 @@ async function getFriendships(friendshipData: {
 }
 
 async function createFriendship(friendshipData: { requester: string, recipient: string }) {
+  // TODO: Currently possible for two friendships to exist for a single pair of users
+  // I can either:
+  // - make two queries to the DB to handle both cases
+  // - create a new key for each Friendship entity, which is a combination of both users,
+  //   but structured agnostic of who is requester & recipient
   const friendship = await Friendship
     .findOneAndUpdate(friendshipData, {}, { upsert: true, new: true })
     .populate('recipient')
@@ -62,7 +67,31 @@ async function createFriendship(friendshipData: { requester: string, recipient: 
   return getFriendshipDto(friendship);
 }
 
+async function updateFriendship(friendshipData: {
+  friendshipId: string,
+  userId: string,
+  userIs: 'recipient' | 'requester',
+  status: 'ACCEPTED' | 'REJECTED',
+}) {
+  const {
+    friendshipId, userId, userIs, status,
+  } = friendshipData;
+
+  const findQuery = {
+    _id: friendshipId,
+    [userIs]: userId,
+  };
+
+  const friendship = await Friendship
+    .findOneAndUpdate(findQuery, { status })
+    .populate(userIs === 'recipient' ? 'requester' : 'recipient')
+    .exec();
+
+  return friendship ? getFriendshipDto(friendship) : null;
+}
+
 export default {
   getFriendships,
   createFriendship,
+  updateFriendship,
 };
