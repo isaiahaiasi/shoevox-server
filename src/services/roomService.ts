@@ -1,23 +1,25 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { validators } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
+import { z } from 'zod';
 import Room, { IRoom } from '../models/Room';
 import { userDtoFields } from '../types/dtos';
-import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
-type RoomDto = SchemaProperties<'Room'> & { createdAt: Date };
+const roomSchema = validators.zodSchemas.schemas.Room;
+
+type RoomDto = z.infer<typeof roomSchema>;
+const roomDtoFields = Object.keys(roomSchema.shape) as (keyof RoomDto)[];
 
 interface RequiredRoomInputs {
   title: string;
   creator: string;
 }
 
-function getRoomDto(room: HydratedDocument<IRoom>): RoomDto {
+function getRoomDto(room: HydratedDocument<IRoom>) {
   const roomDto = serializeDocument(room, roomDtoFields);
   roomDto.creator = filterObject(roomDto.creator, userDtoFields);
-  return roomDto as RoomDto & { createdAt: Date };
+  return roomDto as RoomDto;
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {

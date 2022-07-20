@@ -1,4 +1,4 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { apiSpec } from '@isaiahaiasi/voxelatlas-spec';
 import { RequestHandler, Router } from 'express';
 import { getCleanPathsObject } from './apiSpecHelpers';
 import { wrapController } from './controllerWrapper';
@@ -52,6 +52,6 @@ export function getRouterFromRouteData<T extends Controller>(
 }
 
 export function getOpenApiRouter(controller: Controller) {
-  const paths = getCleanPathsObject(spec.paths);
+  const paths = getCleanPathsObject(apiSpec.paths);
   return getRouterFromRouteData(paths as RouteData<typeof controller>, controller);
 }

@@ -1,13 +1,14 @@
-import { components } from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { validators } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
+import { z } from 'zod';
 import Comment, { IComment } from '../models/Comment';
 import { userDtoFields } from '../types/dtos';
-import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const commentDtoFields = getSchemaProperties(components.schemas.Comment);
-type CommentDto = SchemaProperties<'Comment'> & { createdAt: Date };
+const commentSchema = validators.zodSchemas.schemas.Comment;
+type CommentDto = z.infer<typeof commentSchema>;
+const commentDtoFields = Object.keys(commentSchema.shape) as (keyof CommentDto)[];
 
 type RequiredCommentInputs = {
   room: string,

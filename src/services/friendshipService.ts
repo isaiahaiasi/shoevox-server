@@ -1,12 +1,12 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { validators } from '@isaiahaiasi/voxelatlas-spec';
 import mongoose, { HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
 import { userDtoFields } from '../types/dtos';
-import { getSchemaProperties } from '../utils/apiSpecHelpers';
 import { serializeDocument, filterObject } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const friendshipDtoFields = getSchemaProperties(spec.components.schemas.Friendship);
+const friendshipSchema = validators.zodSchemas.schemas.Friendship;
+const friendshipDtoFields = Object.keys(friendshipSchema.shape);
 
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
   const friendshipDto = serializeDocument(friendship, friendshipDtoFields);

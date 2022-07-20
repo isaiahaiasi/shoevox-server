@@ -1,5 +1,7 @@
-import { components } from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { apiSpec } from '@isaiahaiasi/voxelatlas-spec';
 import { FilterConditionally } from './typeHelpers';
+
+const { components } = apiSpec;
 
 type ObjectSchema = FilterConditionally<typeof components.schemas, { properties: any }>;
 type ObjectSchemaName = keyof ObjectSchema;

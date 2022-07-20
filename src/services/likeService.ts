@@ -1,13 +1,14 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { validators } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
+import { z } from 'zod';
 import Like, { ILike } from '../models/Like';
-import { UserDto, userDtoFields } from '../types/dtos';
-import { getSchemaProperties } from '../utils/apiSpecHelpers';
+import { userDtoFields } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const likeDtoFields = getSchemaProperties(spec.components.schemas.Like);
-type LikeDto = { user: UserDto, room: string, createdAt: Date, id: string };
+const likeSchema = validators.zodSchemas.schemas.Like;
+type LikeDto = z.infer<typeof likeSchema>;
+const likeDtoFields = Object.keys(likeSchema.shape);
 
 interface RequiredLikeInputs {
   user: string,

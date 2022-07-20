@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@faker-js/faker': ^7.2.0
-  '@isaiahaiasi/voxelatlas-spec': ^0.1.11
+  '@isaiahaiasi/voxelatlas-spec': ^0.2.1
   '@types/compression': ^1.7.2
   '@types/cors': ^2.8.12
   '@types/express': ^4.17.13
@@ -27,9 +27,10 @@ specifiers:
   ts-jest: ^28.0.4
   ts-node: ^10.8.1
   typescript: ^4.7.3
+  zod: ^3.17.9
 
 dependencies:
-  '@isaiahaiasi/voxelatlas-spec': 0.1.11
+  '@isaiahaiasi/voxelatlas-spec': 0.2.1
   compression: 1.7.4
   cors: 2.8.5
   dotenv: 16.0.1
@@ -38,6 +39,7 @@ dependencies:
   google-auth-library: 8.0.3
   helmet: 5.1.0
   mongoose: 6.3.6
+  zod: 3.17.9
 
 devDependencies:
   '@faker-js/faker': 7.2.0
@@ -427,9 +429,12 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@isaiahaiasi/voxelatlas-spec/0.1.11:
-    resolution: {integrity: sha512-ONjrkP/AlKpHbaTbGGlBAOtqg/14CJq2O9EXLGNnVp0k1pN8jnWQFEuktM+TXqFORREGiMKQpFc4mwCib4ztzw==}
+  /@isaiahaiasi/voxelatlas-spec/0.2.1:
+    resolution: {integrity: sha512-Plf8HSPJaPTfjc2vdhdAjZ4QJBLw1I4U3qu8NnD9vPZxUOWuQuDbfansIxATyw+1mBDlx76m/p1hoVRbe5PwAQ==}
     engines: {node: '>=16.0.0'}
+    dependencies:
+      typescript: 4.7.4
+      zod: 3.17.9
     dev: false
 
   /@istanbuljs/load-nyc-config/1.1.0:
@@ -4615,6 +4620,12 @@ packages:
     hasBin: true
     dev: true
 
+  /typescript/4.7.4:
+    resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
+    dev: false
+
   /unbox-primitive/1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
     dependencies:
@@ -4835,3 +4846,7 @@ packages:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
     dev: true
+
+  /zod/3.17.9:
+    resolution: {integrity: sha512-QF1843pYoRk1jFP+/UiEySXaTSiIyFod3KyDzoO3qHKGZdX7z7RNXI4lEsiibvpnIZQwcDVU58ZrxP4pQ7BmTQ==}
+    dev: false
