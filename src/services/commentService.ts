@@ -1,6 +1,6 @@
+import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import Comment, { IComment } from '../models/Comment';
-import { Dto, dtoFields } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 

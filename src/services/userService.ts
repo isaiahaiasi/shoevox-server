@@ -1,8 +1,8 @@
+import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
 import FederatedCredential from '../models/FederatedCredential';
 import User, { IUser } from '../models/User';
 import { Provider } from '../types/auth';
-import { Dto, dtoFields } from '../types/dtos';
 import { getOauthUser } from '../utils/authHelpers';
 import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';

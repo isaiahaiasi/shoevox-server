@@ -1,7 +1,7 @@
+import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import mongoose, { HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
-import { dtoFields, Dto } from '../types/dtos';
-import { serializeDocument, filterObject } from '../utils/mongooseHelpers';
+import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
