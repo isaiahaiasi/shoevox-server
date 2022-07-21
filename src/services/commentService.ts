@@ -25,7 +25,7 @@ function getCommentDto(comment: HydratedDocument<IComment>): CommentDto {
 async function getCommentsByRoomId(roomid: string, limit: number, rawCursor?: any) {
   const cursor = deserializeTimestampCursor(rawCursor);
 
-  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const paginationInfo: PaginationInfo<IComment> = { limit, cursor };
 
   const query = getPaginatedQuery(Comment, paginationInfo, { room: roomid });
 

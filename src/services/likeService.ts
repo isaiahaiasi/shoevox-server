@@ -32,7 +32,7 @@ const createLike = async ({ user, room }: RequiredLikeInputs) => {
 
 const getLikesByRoomId = async (room: string, limit: number, rawCursor?: string) => {
   const cursor = deserializeTimestampCursor(rawCursor);
-  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
   const query = getPaginatedQuery(Like, paginationInfo, { room });
 
   const likes = await query.populate('user').exec();

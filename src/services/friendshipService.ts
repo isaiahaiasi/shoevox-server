@@ -34,7 +34,7 @@ async function getFriendships(friendshipData: {
   } = friendshipData;
 
   const cursor = deserializeTimestampCursor(rawCursor);
-  const paginationInfo: PaginationInfo<any> = { cursor, limit };
+  const paginationInfo: PaginationInfo<IFriendship> = { cursor, limit };
 
   const filterQuery = { [userIs]: userId };
 

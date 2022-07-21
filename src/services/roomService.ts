@@ -32,7 +32,7 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
 const getRooms = async (limit: number, rawCursor?: string) => {
   const cursor = deserializeTimestampCursor(rawCursor);
 
-  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
 
   const query = getPaginatedQuery(Room, paginationInfo);
 
@@ -44,7 +44,7 @@ const getRooms = async (limit: number, rawCursor?: string) => {
 // TODO: This isn't very DRY... but idk yet how I want to make the generic interface
 const getRoomsByUserId = async (userId: string, limit: number, rawCursor?: string) => {
   const cursor = deserializeTimestampCursor(rawCursor);
-  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
   const query = getPaginatedQuery(Room, paginationInfo, { creator: userId });
   const rooms = await completeQuery(query);
   return rooms.map(getRoomDto);
