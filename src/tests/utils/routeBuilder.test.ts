@@ -13,7 +13,7 @@ describe('routeBuilder', () => {
     const controller = {
       operation1: jest.fn(),
     };
-    const routeDescription:RouteData<typeof controller> = {
+    const routeDescription = {
       '/': {
         get: {
           operationId: 'operation1',
@@ -32,7 +32,7 @@ describe('routeBuilder', () => {
     const controller = {
       operation1: jest.fn(),
     };
-    const routeDescription:RouteData<typeof controller> = {
+    const routeDescription: RouteData<'operation1'> = {
       '/': {
         get: {
           operationId: 'operation1',

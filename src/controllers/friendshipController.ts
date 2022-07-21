@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
-import { validate } from '../middleware/validators';
 import friendshipService from '../services/friendshipService';
 import { createErrorResponse } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
@@ -36,7 +35,6 @@ const getFriendshipsHandler: RequestHandler = async (req, res) => {
 };
 
 const getFriendships = [
-  ...validate('FriendshipQueryRequest'),
   authenticateUser,
   authorizeSameUser((req) => req.params.userid),
   getFriendshipsHandler,
@@ -95,7 +93,6 @@ const updateFriendshipHandler: RequestHandler = async (req, res, next) => {
 };
 
 const updateFriendship = [
-  ...validate('FriendRequestUpdateBody'),
   authenticateUser,
   updateFriendshipHandler,
 ];

@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { authenticateUser } from '../middleware/authHandlers';
-import { validate } from '../middleware/validators';
 import commentService from '../services/commentService';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
@@ -36,7 +35,6 @@ const createCommentHandler: RequestHandler = async (req, res) => {
 };
 
 const createComment: RequestHandler[] = [
-  ...validate('CommentBody'),
   authenticateUser,
   createCommentHandler,
 ];

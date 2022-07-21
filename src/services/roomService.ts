@@ -1,4 +1,4 @@
-import { validators } from '@isaiahaiasi/voxelatlas-spec';
+import { zSchemas } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
 import { z } from 'zod';
 import Room, { IRoom } from '../models/Room';
@@ -6,7 +6,7 @@ import { userDtoFields } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const roomSchema = validators.zodSchemas.schemas.Room;
+const roomSchema = zSchemas.resources.Room;
 
 type RoomDto = z.infer<typeof roomSchema>;
 const roomDtoFields = Object.keys(roomSchema.shape) as (keyof RoomDto)[];

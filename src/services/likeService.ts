@@ -1,4 +1,4 @@
-import { validators } from '@isaiahaiasi/voxelatlas-spec';
+import { zSchemas } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import { z } from 'zod';
 import Like, { ILike } from '../models/Like';
@@ -6,7 +6,7 @@ import { userDtoFields } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const likeSchema = validators.zodSchemas.schemas.Like;
+const likeSchema = zSchemas.resources.Like;
 type LikeDto = z.infer<typeof likeSchema>;
 const likeDtoFields = Object.keys(likeSchema.shape);
 
@@ -30,7 +30,7 @@ const createLike = async ({ user, room }: RequiredLikeInputs) => {
   return getLikeDto(like);
 };
 
-const getLikesByRoom = async (room: string, limit: number, rawCursor?: string) => {
+const getLikesByRoomId = async (room: string, limit: number, rawCursor?: string) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<any> = { limit, cursor };
   const query = getPaginatedQuery(Like, paginationInfo, { room });
@@ -53,6 +53,6 @@ const deleteLike = async (likeId: string, userId: string) => {
 
 export default {
   createLike,
-  getLikesByRoom,
+  getLikesByRoomId,
   deleteLike,
 };

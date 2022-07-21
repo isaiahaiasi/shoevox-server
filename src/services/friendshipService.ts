@@ -1,11 +1,11 @@
-import { validators } from '@isaiahaiasi/voxelatlas-spec';
+import { zSchemas } from '@isaiahaiasi/voxelatlas-spec';
 import mongoose, { HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
 import { userDtoFields } from '../types/dtos';
 import { serializeDocument, filterObject } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const friendshipSchema = validators.zodSchemas.schemas.Friendship;
+const friendshipSchema = zSchemas.resources.Friendship;
 const friendshipDtoFields = Object.keys(friendshipSchema.shape);
 
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {

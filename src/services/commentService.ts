@@ -1,4 +1,4 @@
-import { validators } from '@isaiahaiasi/voxelatlas-spec';
+import { zSchemas } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import { z } from 'zod';
 import Comment, { IComment } from '../models/Comment';
@@ -6,7 +6,7 @@ import { userDtoFields } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const commentSchema = validators.zodSchemas.schemas.Comment;
+const commentSchema = zSchemas.resources.Comment;
 type CommentDto = z.infer<typeof commentSchema>;
 const commentDtoFields = Object.keys(commentSchema.shape) as (keyof CommentDto)[];
 

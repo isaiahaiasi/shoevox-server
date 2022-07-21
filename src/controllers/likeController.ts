@@ -4,11 +4,11 @@ import likeService from '../services/likeService';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
-const getLikesByRoom: RequestHandler = async (req, res) => {
+const getLikesByRoomId: RequestHandler = async (req, res) => {
   const { roomid } = req.params;
   const { limit, cursor } = getPaginationParams(req, 3);
 
-  const likes = await likeService.getLikesByRoom(roomid, limit, cursor);
+  const likes = await likeService.getLikesByRoomId(roomid, limit, cursor);
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(likes, baseUrl, limit, serializeTimestampCursor);
@@ -55,6 +55,6 @@ const deleteLike = [
 
 export default {
   createLike,
-  getLikesByRoom,
+  getLikesByRoomId,
   deleteLike,
 };

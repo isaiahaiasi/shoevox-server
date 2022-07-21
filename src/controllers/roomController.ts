@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
-import { validate } from '../middleware/validators';
 import roomService from '../services/roomService';
 import { createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
@@ -64,13 +63,6 @@ const createRoomHandler: RequestHandler = async (req, res) => {
   });
 };
 
-const createRoom = [
-  ...validate('RoomBody'),
-  authenticateUser,
-  authorizeSameUser((req) => req.params.userid),
-  createRoomHandler,
-];
-
 const deleteRoomHandler: RequestHandler = async (req, res) => {
   const { roomid } = req.params;
   const { userId } = res.locals;
@@ -81,11 +73,6 @@ const deleteRoomHandler: RequestHandler = async (req, res) => {
     data: deletedRoom,
   });
 };
-
-const deleteRoom: RequestHandler[] = [
-  authenticateUser,
-  deleteRoomHandler,
-];
 
 const updateRoomHandler: RequestHandler = async (req, res) => {
   const roomData = {
@@ -101,8 +88,17 @@ const updateRoomHandler: RequestHandler = async (req, res) => {
   });
 };
 
+const deleteRoom: RequestHandler[] = [
+  authenticateUser,
+  deleteRoomHandler,
+];
+
+const createRoom = [
+  authenticateUser,
+  authorizeSameUser((req) => req.params.userid),
+  createRoomHandler,
+];
 const updateRoom: RequestHandler[] = [
-  ...validate('RoomBody'),
   authenticateUser,
   authorizeSameUser((req) => req.body.creator),
   updateRoomHandler,
