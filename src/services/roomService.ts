@@ -1,28 +1,23 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
 import { HydratedDocument, Query } from 'mongoose';
 import Room, { IRoom } from '../models/Room';
-import { userDtoFields } from '../types/dtos';
-import { getSchemaProperties, SchemaProperties } from '../utils/apiSpecHelpers';
+import { Dto, dtoFields } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
-
-const roomDtoFields = getSchemaProperties(spec.components.schemas.Room);
-type RoomDto = SchemaProperties<'Room'> & { createdAt: Date };
 
 interface RequiredRoomInputs {
   title: string;
   creator: string;
 }
 
-function getRoomDto(room: HydratedDocument<IRoom>): RoomDto {
-  const roomDto = serializeDocument(room, roomDtoFields);
-  roomDto.creator = filterObject(roomDto.creator, userDtoFields);
-  return roomDto as RoomDto & { createdAt: Date };
+function getRoomDto(room: HydratedDocument<IRoom>) {
+  const roomDto = serializeDocument(room, dtoFields.room);
+  roomDto.creator = filterObject(roomDto.creator, dtoFields.user);
+  return roomDto as Dto['Room'];
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
   return query
-    .select(roomDtoFields.join(' '))
+    .select(dtoFields.room.join(' '))
     .populate('creator')
     .exec();
 }
@@ -30,7 +25,7 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
 const getRooms = async (limit: number, rawCursor?: string) => {
   const cursor = deserializeTimestampCursor(rawCursor);
 
-  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
 
   const query = getPaginatedQuery(Room, paginationInfo);
 
@@ -40,9 +35,13 @@ const getRooms = async (limit: number, rawCursor?: string) => {
 };
 
 // TODO: This isn't very DRY... but idk yet how I want to make the generic interface
-const getRoomsByUserId = async (userId: string, limit: number, rawCursor?: string) => {
+const getRoomsByUserId = async (
+  userId: string,
+  limit: number,
+  rawCursor?: string,
+) => {
   const cursor = deserializeTimestampCursor(rawCursor);
-  const paginationInfo: PaginationInfo<any> = { limit, cursor };
+  const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
   const query = getPaginatedQuery(Room, paginationInfo, { creator: userId });
   const rooms = await completeQuery(query);
   return rooms.map(getRoomDto);
@@ -58,14 +57,10 @@ const getRoomById = async (id: string) => {
   return getRoomDto(room);
 };
 
-const createRoom = async ({ title, creator }: RequiredRoomInputs) => {
-  // TODO: the actual room data...
-  const roomData = {
-    title,
-    creator,
-  };
-
-  const room = await new Room(roomData).save().then((res) => res.populate('creator'));
+const createRoom = async (roomData: RequiredRoomInputs) => {
+  const room = await new Room(roomData)
+    .save()
+    .then((res) => res.populate('creator'));
 
   return getRoomDto(room);
 };

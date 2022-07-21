@@ -1,9 +1,11 @@
-import { FilterQuery, HydratedDocument, Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { getNumeric } from './inputHelpers';
 import { ApiResponseLinks } from './typeHelpers';
 
+type TimestampFields = 'createdAt' | 'updatedAt';
+
 type CursorDescription<T> = {
-  field: keyof HydratedDocument<T>;
+  field: (keyof T) | TimestampFields | '_id';
   value: any;
   order?: 'asc' | 'desc';
 }[];
@@ -73,7 +75,7 @@ function getCursorQuery<T>(cursor: CursorDescription<T>): FilterQuery<T> {
 export function getPaginatedQuery<T>(
   model: Model<T>,
   { cursor, limit }: PaginationInfo<T>,
-  filterQuery:FilterQuery<T> = {},
+  filterQuery: FilterQuery<T> = {},
 ) {
   const filteredCursorArray = cursor.filter((c) => c.value != null);
 
@@ -150,7 +152,7 @@ export function deserializeTimestampCursor(
   if (rawCursor) {
     const cursorValues = rawCursor.split(',');
     const [createdAt] = cursorValues;
-    [,id] = cursorValues;
+    [, id] = cursorValues;
     date = new Date(createdAt ?? '');
 
     if (Number.isNaN(date.valueOf())) {

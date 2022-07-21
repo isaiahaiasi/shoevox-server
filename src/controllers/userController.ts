@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
-import { validate } from '../middleware/validators';
 import userService from '../services/userService';
 import { Provider } from '../types/auth';
 import { getTokenFromHeader } from '../utils/authHelpers';
@@ -61,7 +60,6 @@ const createUserHandler: RequestHandler = async (req, res, next) => {
 };
 
 const createUser = [
-  ...validate('UserBody'),
   createUserHandler,
 ];
 

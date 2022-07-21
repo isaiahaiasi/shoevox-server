@@ -1,11 +1,11 @@
-import spec from '@isaiahaiasi/voxelatlas-spec/schema.json';
+import { apiSpec } from '@isaiahaiasi/voxelatlas-spec';
 import controllers from '../../controllers';
 
 describe('General controllers tests', () => {
   test('All exported controllers exist in OpenAPI schema', () => {
     const operationIds: any = {};
 
-    Object.values(spec.paths).forEach((path) => {
+    Object.values(apiSpec.paths).forEach((path) => {
       Object.values(path).forEach((method) => {
         if (method.operationId) {
           operationIds[method.operationId] = true;
@@ -14,7 +14,8 @@ describe('General controllers tests', () => {
     });
 
     Object.keys(controllers).forEach((controllerKey) => {
-      expect(operationIds[controllerKey]).toBe(true);
+      const controller = operationIds[controllerKey];
+      expect(controller).toBe(true);
     });
   });
 });
