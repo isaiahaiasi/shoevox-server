@@ -1,24 +1,18 @@
-import { zSchemas } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
-import { z } from 'zod';
 import Like, { ILike } from '../models/Like';
-import { userDtoFields } from '../types/dtos';
+import { dtoFields, Dto } from '../types/dtos';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
-
-const likeSchema = zSchemas.resources.Like;
-type LikeDto = z.infer<typeof likeSchema>;
-const likeDtoFields = Object.keys(likeSchema.shape);
 
 interface RequiredLikeInputs {
   user: string,
   room: string,
 }
 
-function getLikeDto(like: HydratedDocument<ILike>): LikeDto {
-  const likeDto = serializeDocument(like, likeDtoFields);
-  likeDto.user = filterObject(likeDto.user, userDtoFields);
-  return likeDto as LikeDto;
+function getLikeDto(like: HydratedDocument<ILike>) {
+  const likeDto = serializeDocument(like, dtoFields.like);
+  likeDto.user = filterObject(likeDto.user, dtoFields.user);
+  return likeDto as Dto['Like'];
 }
 
 const createLike = async ({ user, room }: RequiredLikeInputs) => {

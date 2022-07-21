@@ -1,25 +1,21 @@
-import { zSchemas } from '@isaiahaiasi/voxelatlas-spec';
 import mongoose, { HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
-import { userDtoFields } from '../types/dtos';
+import { dtoFields, Dto } from '../types/dtos';
 import { serializeDocument, filterObject } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-const friendshipSchema = zSchemas.resources.Friendship;
-const friendshipDtoFields = Object.keys(friendshipSchema.shape);
-
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
-  const friendshipDto = serializeDocument(friendship, friendshipDtoFields);
+  const friendshipDto = serializeDocument(friendship, dtoFields.friendship);
 
   // users may or may not be populated
   if (!mongoose.Types.ObjectId.isValid(friendshipDto.recipient.toString())) {
-    friendshipDto.recipient = filterObject(friendshipDto.recipient, userDtoFields);
+    friendshipDto.recipient = filterObject(friendshipDto.recipient, dtoFields.user);
   }
   if (!mongoose.Types.ObjectId.isValid(friendshipDto.requester.toString())) {
-    friendshipDto.requester = filterObject(friendshipDto.requester, userDtoFields);
+    friendshipDto.requester = filterObject(friendshipDto.requester, dtoFields.user);
   }
 
-  return friendshipDto;
+  return friendshipDto as Dto['Friendship'];
 }
 
 async function getFriendships(friendshipData: {
