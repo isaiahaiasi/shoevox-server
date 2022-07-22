@@ -67,7 +67,7 @@ describe('getNextLink', () => {
     const cursor = ['abcd', 1234];
     const limit = 5;
 
-    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor: 'abcd%2C1234' });
+    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor: 'abcd,1234' });
   });
 });
 
@@ -85,7 +85,7 @@ describe('getPaginationLinks', () => {
     expect(getPaginationLinks(data, url, limit, getCursor)).toEqual({
       next: {
         href: 'gopher://mysite.com/resource?cursor=2%2C2022-06-13T07%3A21%3A24.519Z&limit=3',
-        cursor: '2%2C2022-06-13T07%3A21%3A24.519Z',
+        cursor: '2,2022-06-13T07:21:24.519Z',
       },
     });
   });

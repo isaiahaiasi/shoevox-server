@@ -104,10 +104,10 @@ export function getPaginationParams(req: { query: any }, defaultLimit: number) {
 }
 
 export function getNextLink(url: string, cursor: any, limit: number) {
-  const cursorStr = cursor ? `cursor=${encodeURIComponent(cursor)}&` : '';
+  const cursorUrlStr = cursor ? `cursor=${encodeURIComponent(cursor)}&` : '';
   return {
-    href: `${url}?${cursorStr}limit=${limit}`,
-    cursor: cursor && encodeURIComponent(cursor),
+    href: `${url}?${cursorUrlStr}limit=${limit}`,
+    cursor: cursor && cursor.toString(),
   };
 }
 
