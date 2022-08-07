@@ -1,8 +1,9 @@
 export const providers = ['google'] as const;
 export type Provider = typeof providers[number];
 
-export interface OauthUserData {
+export interface OauthCredentialData {
   displayName: string;
-  email: string;
   oauthId: string;
+  provider: Provider;
+  email?: string;
 }

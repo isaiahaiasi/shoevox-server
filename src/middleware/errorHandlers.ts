@@ -3,9 +3,7 @@ import { ErrorRequestHandler, RequestHandler } from 'express';
 import { createErrorResponse, createNotImplementedError } from '../utils/errorResponse';
 import { MethodUppercase } from '../utils/typeHelpers';
 
-function getStatusCode(err: any) {
-  return err.status ?? err.statusCode ?? 500;
-}
+const getStatusCode = (err: any) => err.status ?? err.statusCode ?? 500;
 
 export const notImplementedHandler: RequestHandler = (req, res, next) => {
   const { method, originalUrl: fullPath } = req;

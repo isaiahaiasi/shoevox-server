@@ -1,12 +1,9 @@
 import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
 import userService from '../services/userService';
-import { Provider } from '../types/auth';
-import { getTokenFromHeader } from '../utils/authHelpers';
-import { createGenericServerError, createResourceNotFoundError } from '../utils/errorResponse';
+import { createResourceNotFoundError } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams } from '../utils/paginationHelpers';
-import { MethodUppercase } from '../utils/typeHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {
   const { limit, cursor } = getPaginationParams(req, 5);
@@ -43,20 +40,22 @@ const getUserById: RequestHandler = async (req, res, next) => {
 const createUserHandler: RequestHandler = async (req, res, next) => {
   // get username, email (optionally), provider, and auth token
   // const { username, email } = req.body;
-  const provider = req.query.provider as Provider;
-  const token = getTokenFromHeader(req);
+  // const provider = req.query.provider as Provider;
+  // const token = getTokenFromHeader(req);
 
-  const user = await userService.createUser({
-    provider, token,
-  });
+  // const user = await userService.createUser({
+  //   provider, token,
+  // });
 
-  if (user) {
-    res.json(user);
-  } else {
-    next(createGenericServerError(
-      { method: req.method as MethodUppercase, resource: 'user' },
-    ));
-  }
+  // if (user) {
+  //   res.json(user);
+  // } else {
+  //   next(createGenericServerError(
+  //     { method: req.method as MethodUppercase, resource: 'user' },
+  //   ));
+  // }
+
+  next();
 };
 
 const createUser = [

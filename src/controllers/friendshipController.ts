@@ -97,10 +97,6 @@ const updateFriendship = [
   updateFriendshipHandler,
 ];
 
-// const deleteFriendship: RequestHandler = (req, res, next) => {
-
-// };
-
 export default {
   createFriendship,
   getFriendships,
