@@ -1,4 +1,4 @@
-export const providers = ['google'] as const;
+export const providers = ['google', 'github'] as const;
 export type Provider = typeof providers[number];
 
 export interface OauthCredentialData {

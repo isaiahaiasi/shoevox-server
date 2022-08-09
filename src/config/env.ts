@@ -6,7 +6,8 @@ interface Env {
   CLIENT_URL?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
-  HAS_CREDENTIALS_GOOGLE: boolean;
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
   MONGODB_URI?: string;
   NODE_ENV: string;
   PORT: number;
@@ -36,7 +37,8 @@ function initEnv() {
     SESSION_COOKIE_SECRET: process.env.SESSION_COOKIE_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    HAS_CREDENTIALS_GOOGLE: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     MONGODB_URI: process.env.MONGODB_URI,
     NODE_ENV: process.env.NODE_ENV ?? fallbacks.NODE_ENV,
     PORT: getNumeric(process.env.PORT) ?? fallbacks.PORT,

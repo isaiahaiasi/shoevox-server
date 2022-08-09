@@ -10,6 +10,7 @@ if (!CLIENT_URL) {
 
 const providerOptions = {
   google: { scope: ['email', 'profile'] },
+  github: { scope: ['email'] },
 };
 
 const getCurrentUser: RequestHandler = (req, res) => {
