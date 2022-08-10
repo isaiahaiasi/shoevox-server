@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import {
-  getCurrentUser, handleLoginFailure, handleProvider, handleProviderRedirect,
+  getCurrentUser, handleLoginFailure, handleProvider, handleProviderRedirect, handleLogout,
 } from '../../controllers/authController';
 
 const router = Router();
 
 router.get('/current', getCurrentUser);
+
+router.get('/logout', handleLogout);
 
 router.get('/providers/:provider', handleProvider);
 

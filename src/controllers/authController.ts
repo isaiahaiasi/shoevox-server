@@ -55,9 +55,20 @@ const handleProvider: RequestHandler = (req, res, next) => {
   )(req, res, next);
 };
 
+const handleLogout: RequestHandler = (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      next(err);
+    } else {
+      res.redirect(CLIENT_URL);
+    }
+  });
+};
+
 export {
+  getCurrentUser,
+  handleLoginFailure,
+  handleLogout,
   handleProvider,
   handleProviderRedirect,
-  handleLoginFailure,
-  getCurrentUser,
 };
