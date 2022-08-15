@@ -95,8 +95,6 @@ export default function configurePassport() {
   });
 
   passport.serializeUser((user, done) => {
-    // TODO: solve the mystery of the un-extendable Express interface.
-    // @ts-ignore
     done(null, user.id);
   });
 
