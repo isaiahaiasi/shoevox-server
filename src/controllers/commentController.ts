@@ -21,9 +21,14 @@ const getCommentsByRoomId: RequestHandler = async (req, res) => {
 };
 
 const createCommentHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // It should not be possible to hit this function without having authenticated the user
+    throw new Error('User could not be found.');
+  }
+
   const commentData = {
     room: req.params.roomid,
-    user: res.locals.userId,
+    user: req.user.id,
     content: req.body.content,
   };
 
@@ -40,8 +45,14 @@ const createComment: RequestHandler[] = [
 ];
 
 const deleteCommentHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
+  const userId = req.user.id;
+
   const { commentid } = req.params;
-  const { userId } = res.locals;
 
   const deletedComment = await commentService.deleteComment(commentid, userId);
 

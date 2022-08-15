@@ -42,7 +42,13 @@ const getFriendships = [
 
 const createFriendshipHandler: RequestHandler = async (req, res, next) => {
   const { userid: recipient } = req.params;
-  const { userId: requester } = res.locals;
+
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
+  const { id: requester } = req.user;
 
   if (recipient === requester) {
     next(createErrorResponse({
@@ -70,9 +76,16 @@ const updateFriendshipHandler: RequestHandler = async (req, res, next) => {
   const { friendshipid } = req.params;
   const { is, status } = req.body;
 
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
+  const userId = req.user.id;
+
   const requestData = {
     friendshipId: friendshipid,
-    userId: res.locals.userId,
+    userId,
     userIs: is as 'recipient' | 'requester', // validation handled prior
     status: status as 'ACCEPTED' | 'REJECTED',
   };

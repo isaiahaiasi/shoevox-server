@@ -20,9 +20,14 @@ const getLikesByRoomId: RequestHandler = async (req, res) => {
 };
 
 const createLikeHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
   const likeData = {
     room: req.params.roomid,
-    user: res.locals.userId,
+    user: req.user.id,
   };
 
   const like = await likeService.createLike(likeData);
@@ -38,8 +43,14 @@ const createLike: RequestHandler[] = [
 ];
 
 const deleteLikeHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
+  const userId = req.user.id;
+
   const { likeid } = req.params;
-  const { userId } = res.locals;
 
   const deletedLike = await likeService.deleteLike(likeid, userId);
 

@@ -50,9 +50,14 @@ const getRoomById: RequestHandler = async (req, res, next) => {
 };
 
 const createRoomHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
   // TODO: Get the multipart form data for the room
   const roomData = {
-    creator: res.locals.userId,
+    creator: req.user.id,
     title: req.body.title,
   };
 
@@ -64,8 +69,13 @@ const createRoomHandler: RequestHandler = async (req, res) => {
 };
 
 const deleteRoomHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
+  const userId = req.user.id;
   const { roomid } = req.params;
-  const { userId } = res.locals;
 
   const deletedRoom = await roomService.deleteRoom(roomid, userId);
 
@@ -75,9 +85,14 @@ const deleteRoomHandler: RequestHandler = async (req, res) => {
 };
 
 const updateRoomHandler: RequestHandler = async (req, res) => {
+  if (!req.user) {
+    // Prior middleware should reject request if req.user doesn't exist.
+    throw new Error('User could not be found.');
+  }
+
   const roomData = {
     id: req.params.roomid,
-    creator: res.locals.userId,
+    creator: req.user.id,
     title: req.body.title,
   };
 

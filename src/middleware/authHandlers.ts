@@ -17,7 +17,7 @@ export function authorizeSameUser(getResourceOwner: GetRequestedResourceOwner): 
   return (req, res, next) => {
     const resourceOwner = getResourceOwner(req);
 
-    if (resourceOwner !== res.locals.userId) {
+    if (!req.user || resourceOwner !== req.user.id) {
       // TODO: Predefined Error type
       res.status(403);
       throw Error('User does not have permission to access requested resource!');
