@@ -29,7 +29,7 @@ const getUserById: RequestHandler = async (req, res, next) => {
   const user = await userService.getUserById(userid);
 
   if (user) {
-    res.json(user);
+    res.json({ data: user });
   } else {
     next(createResourceNotFoundError(
       { resource: 'user', identifier: userid, fullPath: req.originalUrl },

@@ -13,8 +13,8 @@ import User from './models/User';
 // * Populate DB with dummy data
 
 const NUM_USERS = 10;
-const MAX_ROOMS_PER_USER = 5;
-const MAX_LIKES_PER_ROOM = 6; // Cannot be more than NUM_USERS
+const MAX_ROOMS_PER_USER = 10;
+const MAX_LIKES_PER_ROOM = 20; // Cannot be more than NUM_USERS
 const MAX_FRIENDSHIPS_PER_USER = 5; // Cannot be more than NUM_USERS
 const MAX_COMMENTS_PER_ROOM = 7;
 

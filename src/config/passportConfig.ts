@@ -6,7 +6,7 @@ import passport, { Profile } from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import userService from '../services/userService';
-import { OauthCredentialData, Provider } from '../types/auth';
+import { OauthCredentialData, Provider } from '../utils/auth';
 import { getEnv } from './env';
 
 function getCallbackUrl(provider: Provider) {

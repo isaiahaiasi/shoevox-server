@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { Provider, providers } from '../types/auth';
+import { Provider, providers } from '../utils/auth';
 
 export interface IFederatedCredential {
   user: Schema.Types.ObjectId;

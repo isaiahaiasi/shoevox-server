@@ -2,7 +2,7 @@ import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
 import FederatedCredential from '../models/FederatedCredential';
 import User, { IUser } from '../models/User';
-import { OauthCredentialData } from '../types/auth';
+import { OauthCredentialData } from '../utils/auth';
 import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 

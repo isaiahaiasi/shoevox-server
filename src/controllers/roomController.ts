@@ -39,7 +39,7 @@ const getRoomById: RequestHandler = async (req, res, next) => {
   const room = await roomService.getRoomById(roomid);
 
   if (room) {
-    res.json(room);
+    res.json({ data: room });
   } else {
     const { originalUrl: fullPath } = req;
     const resource = 'room';
