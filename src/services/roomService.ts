@@ -1,5 +1,7 @@
 import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
+import Comment from '../models/Comment';
+import Like from '../models/Like';
 import Room, { IRoom } from '../models/Room';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
@@ -9,9 +11,18 @@ interface RequiredRoomInputs {
   creator: string;
 }
 
-function getRoomDto(room: HydratedDocument<IRoom>) {
+async function getRoomDto(room: HydratedDocument<IRoom>) {
   const roomDto = serializeDocument(room, dtoFields.room);
+
+  const [likeCount, commentCount] = await Promise.all([
+    Like.countDocuments({ room: roomDto.id }).exec(),
+    Comment.countDocuments({ room: roomDto.id }).exec(),
+  ]);
+
+  roomDto.likeCount = likeCount;
+  roomDto.commentCount = commentCount;
   roomDto.creator = filterObject(roomDto.creator, dtoFields.user);
+
   return roomDto as Dto['Room'];
 }
 
@@ -31,7 +42,7 @@ const getRooms = async (limit: number, rawCursor?: string) => {
 
   const rooms = await completeQuery(query);
 
-  return rooms.map(getRoomDto);
+  return Promise.all(rooms.map(getRoomDto));
 };
 
 // TODO: This isn't very DRY... but idk yet how I want to make the generic interface
@@ -44,7 +55,7 @@ const getRoomsByUserId = async (
   const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
   const query = getPaginatedQuery(Room, paginationInfo, { creator: userId });
   const rooms = await completeQuery(query);
-  return rooms.map(getRoomDto);
+  return Promise.all(rooms.map(getRoomDto));
 };
 
 const getRoomById = async (id: string) => {

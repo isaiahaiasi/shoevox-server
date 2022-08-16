@@ -18,7 +18,7 @@ const roomSchema = new Schema<IRoom>({
   collection: 'rooms',
 });
 
-roomSchema.virtual('url').get(function getUrl() {
+roomSchema.virtual('dataUrl').get(function getUrl() {
   return `https://placeholder-host-d0cae2/roomdata/${this._id}`;
 });
 

@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@faker-js/faker': ^7.2.0
-  '@isaiahaiasi/voxelatlas-spec': ^0.2.12
+  '@isaiahaiasi/voxelatlas-spec': ^0.2.14
   '@types/compression': ^1.7.2
   '@types/cors': ^2.8.12
   '@types/express': ^4.17.13
@@ -39,7 +39,7 @@ specifiers:
   zod: ^3.17.9
 
 dependencies:
-  '@isaiahaiasi/voxelatlas-spec': 0.2.12
+  '@isaiahaiasi/voxelatlas-spec': 0.2.14
   compression: 1.7.4
   cookie-parser: 1.4.6
   cors: 2.8.5
@@ -447,8 +447,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@isaiahaiasi/voxelatlas-spec/0.2.12:
-    resolution: {integrity: sha512-RsDzLUhTiG3xnpRipNGfaY/Bd4ns5gjKaOn6gujaAQS7hhV6nl1dwhT+008PZVWc+5qFkdITS9sxjCbr+21lNQ==}
+  /@isaiahaiasi/voxelatlas-spec/0.2.14:
+    resolution: {integrity: sha512-z5pDrXMO5cz8m9P9dE67f7vMnUrwUx7IkZX2O5s8469VBHCTDRQP5TDfA3x6xHRrMGZvlvR3c3uzM3Ne3bZnRg==}
     engines: {node: '>=16.0.0'}
     dependencies:
       typescript: 4.7.4
