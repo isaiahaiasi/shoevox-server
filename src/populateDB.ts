@@ -12,11 +12,11 @@ import User from './models/User';
 
 // * Populate DB with dummy data
 
-const NUM_USERS = 10;
-const MAX_ROOMS_PER_USER = 10;
-const MAX_LIKES_PER_ROOM = 20; // Cannot be more than NUM_USERS
-const MAX_FRIENDSHIPS_PER_USER = 5; // Cannot be more than NUM_USERS
-const MAX_COMMENTS_PER_ROOM = 7;
+const NUM_USERS = 100;
+const MAX_ROOMS_PER_USER = 15;
+const MAX_LIKES_PER_ROOM = 150; // Cannot be more than NUM_USERS
+const MAX_FRIENDSHIPS_PER_USER = 20; // Cannot be more than NUM_USERS
+const MAX_COMMENTS_PER_ROOM = 60;
 
 interface RefDependencies {
   [key: string]: { _id: string }[];
@@ -81,7 +81,8 @@ function getComments({ users, rooms }: RefDependencies) {
   const comments: any[] = [];
 
   rooms.forEach((roomref) => {
-    for (let i = 0; i < MAX_COMMENTS_PER_ROOM; i++) {
+    const commentCount = randInt(0, MAX_COMMENTS_PER_ROOM - 1);
+    for (let i = 0; i < commentCount; i++) {
       const user = users[randInt(0, users.length - 1)]._id;
       const room = roomref._id;
 
