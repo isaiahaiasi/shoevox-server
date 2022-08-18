@@ -21,9 +21,14 @@ const getRooms: RequestHandler = async (req, res) => {
 
 const getRoomsByUserId: RequestHandler = async (req, res) => {
   const { limit, cursor: rawCursor } = getPaginationParams(req, 3);
+  const rel = req.query.rel ?? 'created';
   const { userid } = req.params;
 
-  const rooms = await roomService.getRoomsByUserId(userid, limit, rawCursor);
+  const serviceFn = rel === 'liked'
+    ? roomService.getRoomsLikedByUser
+    : roomService.getRoomsByCreator;
+
+  const rooms = await serviceFn(userid, limit, rawCursor);
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(rooms, baseUrl, limit, serializeTimestampCursor);

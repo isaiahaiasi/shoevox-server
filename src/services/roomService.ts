@@ -1,7 +1,7 @@
 import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
 import Comment from '../models/Comment';
-import Like from '../models/Like';
+import Like, { ILike } from '../models/Like';
 import Room, { IRoom } from '../models/Room';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
@@ -45,16 +45,35 @@ const getRooms = async (limit: number, rawCursor?: string) => {
   return Promise.all(rooms.map(getRoomDto));
 };
 
-// TODO: This isn't very DRY... but idk yet how I want to make the generic interface
-const getRoomsByUserId = async (
+const getRoomsByCreator = async (
   userId: string,
   limit: number,
   rawCursor?: string,
 ) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
+
   const query = getPaginatedQuery(Room, paginationInfo, { creator: userId });
   const rooms = await completeQuery(query);
+  return Promise.all(rooms.map(getRoomDto));
+};
+
+const getRoomsLikedByUser = async (
+  userId: string,
+  limit: number,
+  rawCursor?: string,
+) => {
+  const cursor = deserializeTimestampCursor(rawCursor);
+  const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
+
+  const likes = await getPaginatedQuery(Like, paginationInfo, { user: userId }).exec();
+
+  const roomIds = likes.map((like) => like.room);
+
+  const roomQuery = Room.find({ _id: { $in: roomIds } });
+
+  const rooms = await completeQuery(roomQuery);
+
   return Promise.all(rooms.map(getRoomDto));
 };
 
@@ -102,6 +121,7 @@ export default {
   deleteRoom,
   getRooms,
   getRoomById,
-  getRoomsByUserId,
+  getRoomsByCreator,
+  getRoomsLikedByUser,
   updateRoom,
 };
