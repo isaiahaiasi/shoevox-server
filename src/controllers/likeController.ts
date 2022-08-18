@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { authenticateUser } from '../middleware/authHandlers';
 import likeService from '../services/likeService';
+import { createErrorResponse } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
@@ -17,6 +18,35 @@ const getLikesByRoomId: RequestHandler = async (req, res) => {
     data: likes,
     links,
   });
+};
+
+const getLikesByUserId: RequestHandler = async (req, res) => {
+  const { userid } = req.params;
+  const { limit, cursor } = getPaginationParams(req, 3);
+
+  const likes = await likeService.getLikesByUserId(userid, limit, cursor);
+
+  const baseUrl = getFullRequestUrl(req, false);
+  const links = getPaginationLinks(likes, baseUrl, limit, serializeTimestampCursor);
+
+  res.json({
+    data: likes,
+    links,
+  });
+};
+
+const getLike: RequestHandler = async (req, res) => {
+  const { roomid, userid } = req.params;
+
+  const like = await likeService.getLike({ room: roomid, user: userid });
+
+  if (like) {
+    return res.json({
+      data: like,
+    });
+  }
+
+  return res.status(404).json(createErrorResponse({ status: 404 }));
 };
 
 const createLikeHandler: RequestHandler = async (req, res) => {
@@ -67,5 +97,7 @@ const deleteLike = [
 export default {
   createLike,
   getLikesByRoomId,
+  getLikesByUserId,
+  getLike,
   deleteLike,
 };

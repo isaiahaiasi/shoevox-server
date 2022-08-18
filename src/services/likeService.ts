@@ -24,6 +24,7 @@ const createLike = async ({ user, room }: RequiredLikeInputs) => {
   return getLikeDto(like);
 };
 
+// TODO: Probably want to make a general "getLikes" service, with room OR user
 const getLikesByRoomId = async (room: string, limit: number, rawCursor?: string) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
@@ -33,10 +34,28 @@ const getLikesByRoomId = async (room: string, limit: number, rawCursor?: string)
   return likes.map(getLikeDto);
 };
 
+const getLikesByUserId = async (user: string, limit: number, rawCursor?: string) => {
+  const cursor = deserializeTimestampCursor(rawCursor);
+  const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
+  const query = getPaginatedQuery(Like, paginationInfo, { user });
+
+  const likes = await query.populate('user').exec();
+  return likes.map(getLikeDto);
+};
+
+const getLike = async ({ room, user }: Record<'room' | 'user', string>) => {
+  const like = await Like.findOne({ room, user }).populate('user').exec();
+
+  return like ? getLikeDto(like) : null;
+};
+
 const deleteLike = async (likeId: string, userId: string) => {
   // TODO: right now, authorization is implicit in this step to avoid multiple DB Queries
   // I'd like to find a better solution at some point...
-  const deletedLike = await Like.findOneAndDelete({ _id: likeId, user: userId });
+  const deletedLike = await Like
+    .findOneAndDelete({ _id: likeId, user: userId })
+    .populate('user')
+    .exec();
 
   if (!deletedLike) {
     throw Error(`Could not find Like with id ${likeId} to delete!`);
@@ -48,5 +67,7 @@ const deleteLike = async (likeId: string, userId: string) => {
 export default {
   createLike,
   getLikesByRoomId,
+  getLikesByUserId,
+  getLike,
   deleteLike,
 };

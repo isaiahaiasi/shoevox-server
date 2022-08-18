@@ -13,6 +13,8 @@ function getCallbackUrl(provider: Provider) {
   return `/v1/auth/providers/${provider}/redirect`;
 }
 
+// TODO: Make providers optional?
+
 function getGoogleStrategy() {
   const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = getEnv();
 
