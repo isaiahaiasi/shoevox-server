@@ -1,6 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import { Document } from 'mongoose';
 
+// no clue why these aren't implemented in the built-in typings...
+export interface ITimestamps {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export function filterObject<T, F extends readonly string[]>(obj: T, keys: F) {
   const entries = Object.entries(obj).filter(([k]) => keys.indexOf(k) !== -1);
   return Object.fromEntries(entries);

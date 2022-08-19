@@ -6,7 +6,7 @@ import { OauthCredentialData } from '../utils/auth';
 import { serializeDocument } from '../utils/mongooseHelpers';
 import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
 
-function getUserDto(user: HydratedDocument<IUser>) {
+export function getUserDto(user: HydratedDocument<IUser>) {
   return serializeDocument(user, dtoFields.user) as Dto['User'];
 }
 

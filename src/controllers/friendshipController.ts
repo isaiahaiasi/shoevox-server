@@ -1,30 +1,38 @@
-import { RequestHandler } from 'express';
-import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
-import friendshipService from '../services/friendshipService';
+import { Request, RequestHandler } from 'express';
+import { authenticateUser } from '../middleware/authHandlers';
+import friendshipService, { FriendshipRequestData } from '../services/friendshipService';
 import { createErrorResponse } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
-const getFriendshipsHandler: RequestHandler = async (req, res) => {
+// Doing a weird thing where I've got magic limits all over the place for no reason...
+// TODO: Remove magic number limits & extract all limits.
+const LOCAL_DEFAULT_LIMIT = 10;
+
+function getFriendshipRequestData(req: Request): FriendshipRequestData {
   const { userid } = req.params;
   const { is, status } = req.query;
-  const { limit, cursor } = getPaginationParams(req, 5);
+  const paginationParams = getPaginationParams(req, LOCAL_DEFAULT_LIMIT);
 
-  const requestData = {
+  return {
     userId: userid,
-    userIs: is as 'recipient' | 'requester', // validation handled prior
-    limit,
-    cursor,
+    userIsRecipient: is == null ? undefined : String(is).toLowerCase() === 'recipient',
     status: status as 'ACCEPTED' | 'PENDING' | 'REJECTED' | undefined,
+    paginationParams,
   };
+}
+
+const getFriendshipsHandler: RequestHandler = async (req, res) => {
+  const requestData = getFriendshipRequestData(req);
 
   const friendships = await friendshipService.getFriendships(requestData);
 
   const baseUrl = getFullRequestUrl(req, false);
+
   const links = getPaginationLinks(
     friendships as any,
     baseUrl,
-    limit,
+    requestData.paginationParams.limit,
     serializeTimestampCursor,
   );
 
@@ -34,11 +42,30 @@ const getFriendshipsHandler: RequestHandler = async (req, res) => {
   });
 };
 
+// TODO: Certain query params return info that should probably require authentication
+// But I'm not sure how to split control based on data not available in path?...
 const getFriendships = [
-  authenticateUser,
-  authorizeSameUser((req) => req.params.userid),
+  // authenticateUser,
+  // authorizeSameUser((req) => req.params.userid),
   getFriendshipsHandler,
 ];
+
+const getFriends: RequestHandler = async (req, res) => {
+  const requestData = getFriendshipRequestData(req);
+
+  const friends = await friendshipService.getFriends(requestData);
+
+  const baseUrl = getFullRequestUrl(req, false);
+
+  const links = getPaginationLinks(
+    friends as any,
+    baseUrl,
+    requestData.paginationParams.limit,
+    serializeTimestampCursor,
+  );
+
+  res.json({ data: friends, links });
+};
 
 const createFriendshipHandler: RequestHandler = async (req, res, next) => {
   const { userid: recipient } = req.params;
@@ -113,6 +140,7 @@ const updateFriendship = [
 export default {
   createFriendship,
   getFriendships,
+  getFriends,
   updateFriendship,
   // deleteFriendship,
 };

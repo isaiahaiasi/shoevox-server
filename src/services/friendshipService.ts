@@ -1,52 +1,91 @@
 import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { FilterQuery, HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
 import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
+import { getUserDto } from './userService';
+
+export interface FriendshipRequestData {
+  userId: string,
+  userIsRecipient?: boolean,
+  status?: 'ACCEPTED' | 'PENDING' | 'REJECTED',
+  paginationParams: {
+    limit: number,
+    cursor?: string,
+  },
+}
 
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
   const friendshipDto = serializeDocument(friendship, dtoFields.friendship);
 
-  // users may or may not be populated
-  if (!mongoose.Types.ObjectId.isValid(friendshipDto.recipient.toString())) {
-    friendshipDto.recipient = filterObject(friendshipDto.recipient, dtoFields.user);
-  }
-  if (!mongoose.Types.ObjectId.isValid(friendshipDto.requester.toString())) {
-    friendshipDto.requester = filterObject(friendshipDto.requester, dtoFields.user);
-  }
+  friendshipDto.recipient = filterObject(friendshipDto.recipient, dtoFields.user);
+  friendshipDto.requester = filterObject(friendshipDto.requester, dtoFields.user);
 
   return friendshipDto as Dto['Friendship'];
 }
 
-async function getFriendships(friendshipData: {
-  userId: string,
-  userIs: 'recipient' | 'requester',
-  limit: number,
-  cursor?: string,
-  status?: 'ACCEPTED' | 'PENDING' | 'REJECTED',
-}) {
+async function getFriendshipDocuments(friendshipData: FriendshipRequestData) {
   const {
-    userId, userIs, limit, cursor: rawCursor, status,
+    userId,
+    userIsRecipient,
+    status,
+    paginationParams: { limit, cursor: rawCursor },
   } = friendshipData;
 
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<IFriendship> = { cursor, limit };
 
-  const filterQuery = { [userIs]: userId };
+  const filterQuery: FilterQuery<IFriendship> = {};
+
+  // Filter by whether given user is requester, recipient, or either
+  // (if no option is provided, default to "either")
+  if (userIsRecipient != null) {
+    filterQuery[userIsRecipient ? 'recipient' : 'requester'] = userId;
+  } else {
+    filterQuery.$or = [
+      { recipient: userId },
+      { requester: userId },
+    ];
+  }
 
   if (status) {
     filterQuery.status = status;
   }
 
-  const friendships = await getPaginatedQuery<IFriendship>(
+  return getPaginatedQuery<IFriendship>(
     Friendship,
     paginationInfo,
     filterQuery,
   )
-    .populate(userIs === 'recipient' ? 'requester' : 'recipient')
+    .populate(['recipient', 'requester'])
     .exec();
+}
+
+/** Returns Friendship resources, which are similar to Friendship data model */
+async function getFriendships(friendshipData: FriendshipRequestData) {
+  const friendships = await getFriendshipDocuments(friendshipData);
 
   return friendships.map(getFriendshipDto);
+}
+
+/** Returns Friend resources, which are more usable than Friendships */
+async function getFriends(friendshipData: FriendshipRequestData) {
+  const friendships = await getFriendshipDocuments(friendshipData);
+
+  return friendships.map((friendship) => {
+    // Need to cast because @types/mongoose doesn't register effect of populate()
+    const userIsRecipient = friendshipData.userId === (friendship.recipient as any)._id.toString();
+
+    const user = userIsRecipient ? friendship.requester : friendship.recipient;
+
+    return {
+      user: getUserDto(user as any),
+      initiator: userIsRecipient,
+      status: friendship.status,
+      id: friendship._id,
+      createdAt: friendship.createdAt,
+    };
+  });
 }
 
 async function createFriendship(friendshipData: { requester: string, recipient: string }) {
@@ -88,6 +127,7 @@ async function updateFriendship(friendshipData: {
 
 export default {
   getFriendships,
+  getFriends,
   createFriendship,
   updateFriendship,
 };

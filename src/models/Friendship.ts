@@ -1,8 +1,9 @@
 import { model, Schema } from 'mongoose';
+import { ITimestamps } from '../utils/mongooseHelpers';
 
 export type FriendshipStatus = 'ACCEPTED' | 'PENDING' | 'REJECTED';
 
-export interface IFriendship {
+export interface IFriendship extends ITimestamps {
   requester: Schema.Types.ObjectId;
   recipient: Schema.Types.ObjectId;
   status: FriendshipStatus;

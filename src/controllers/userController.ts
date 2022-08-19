@@ -37,31 +37,6 @@ const getUserById: RequestHandler = async (req, res, next) => {
   }
 };
 
-const createUserHandler: RequestHandler = async (req, res, next) => {
-  // get username, email (optionally), provider, and auth token
-  // const { username, email } = req.body;
-  // const provider = req.query.provider as Provider;
-  // const token = getTokenFromHeader(req);
-
-  // const user = await userService.createUser({
-  //   provider, token,
-  // });
-
-  // if (user) {
-  //   res.json(user);
-  // } else {
-  //   next(createGenericServerError(
-  //     { method: req.method as MethodUppercase, resource: 'user' },
-  //   ));
-  // }
-
-  next();
-};
-
-const createUser = [
-  createUserHandler,
-];
-
 const deleteUserHandler: RequestHandler = async (req, res) => {
   const { userid } = req.params;
 
@@ -80,7 +55,6 @@ const deleteUser: RequestHandler[] = [
 ];
 
 export default {
-  createUser,
   deleteUser,
   getUsers,
   getUserById,
