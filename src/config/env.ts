@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { getNumeric } from '../utils/inputHelpers';
 
 interface Env {
-  DEBUG_DB: boolean;
+  DB_DEBUG_MODE: boolean;
   CLIENT_URL?: string;
   GOOGLE_CLIENT_ID?: string;
   GOOGLE_CLIENT_SECRET?: string;
@@ -32,7 +32,7 @@ function getStringBoolean(str?: string) {
  */
 function initEnv() {
   env = {
-    DEBUG_DB: getStringBoolean(process.env.DEBUG_DB),
+    DB_DEBUG_MODE: getStringBoolean(process.env.DB_DEBUG_MODE),
     CLIENT_URL: process.env.CLIENT_URL,
     SESSION_COOKIE_SECRET: process.env.SESSION_COOKIE_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { getEnv } from './env';
 
 export async function initializeMongoose() {
-  const { MONGODB_URI, DEBUG_DB } = getEnv();
+  const { MONGODB_URI, DB_DEBUG_MODE } = getEnv();
 
   if (!MONGODB_URI) {
     throw Error(
@@ -11,7 +11,7 @@ export async function initializeMongoose() {
     );
   }
 
-  if (DEBUG_DB) {
+  if (DB_DEBUG_MODE) {
     console.log(process.env.DEBUG_DB);
     mongoose.set('debug', true);
   }
