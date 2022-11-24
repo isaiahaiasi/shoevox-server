@@ -6,13 +6,14 @@ import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '.
 import { getUserDto } from './userService';
 
 export interface FriendshipRequestData {
-  userId: string,
-  userIsRecipient?: boolean,
-  status?: 'ACCEPTED' | 'PENDING' | 'REJECTED',
+  userId: string;
+  userIsRecipient?: boolean;
+  status?: 'ACCEPTED' | 'PENDING' | 'REJECTED';
   paginationParams: {
-    limit: number,
-    cursor?: string,
-  },
+    limit: number;
+    cursor?: string;
+  };
+  populate?: boolean;
 }
 
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
@@ -24,12 +25,13 @@ function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
   return friendshipDto as Dto['Friendship'];
 }
 
-async function getFriendshipDocuments(friendshipData: FriendshipRequestData) {
+export async function getFriendshipDocuments(friendshipData: FriendshipRequestData) {
   const {
     userId,
     userIsRecipient,
     status,
     paginationParams: { limit, cursor: rawCursor },
+    populate = true,
   } = friendshipData;
 
   const cursor = deserializeTimestampCursor(rawCursor);
@@ -52,13 +54,15 @@ async function getFriendshipDocuments(friendshipData: FriendshipRequestData) {
     filterQuery.status = status;
   }
 
-  return getPaginatedQuery<IFriendship>(
+  const query = getPaginatedQuery<IFriendship>(
     Friendship,
     paginationInfo,
     filterQuery,
-  )
-    .populate(['recipient', 'requester'])
-    .exec();
+  );
+
+  return populate
+    ? query.populate(['recipient', 'requester']).exec()
+    : query.exec();
 }
 
 /** Returns Friendship resources, which are similar to Friendship data model */

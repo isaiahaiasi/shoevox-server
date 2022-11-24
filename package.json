@@ -39,7 +39,7 @@
     "typescript": "^4.7.3"
   },
   "dependencies": {
-    "@isaiahaiasi/voxelatlas-spec": "^0.2.22",
+    "@isaiahaiasi/voxelatlas-spec": "^0.2.25",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

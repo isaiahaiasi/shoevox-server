@@ -15,6 +15,11 @@ export interface PaginationInfo<T> {
   limit: number;
 }
 
+export interface RawPaginationInfo {
+  cursor?: string;
+  limit: number;
+}
+
 /** Given 'desc' returns '$lt'; otherwise, returns '$gt' */
 function getFilterKey(order: 'asc' | 'desc' | undefined) {
   return order === 'desc' ? '$lt' : '$gt';

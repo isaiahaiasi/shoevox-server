@@ -6,9 +6,9 @@ import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
 const getRooms: RequestHandler = async (req, res) => {
-  const { limit, cursor: rawCursor } = getPaginationParams(req, 3);
+  const { limit, cursor } = getPaginationParams(req, 3);
 
-  const rooms = await roomService.getRooms(limit, rawCursor);
+  const rooms = await roomService.getRooms({ limit, cursor });
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(rooms, baseUrl, limit, serializeTimestampCursor);
@@ -20,15 +20,27 @@ const getRooms: RequestHandler = async (req, res) => {
 };
 
 const getRoomsByUserId: RequestHandler = async (req, res) => {
-  const { limit, cursor: rawCursor } = getPaginationParams(req, 3);
-  const rel = req.query.rel ?? 'created';
+  const { limit, cursor } = getPaginationParams(req, 3);
   const { userid } = req.params;
 
-  const serviceFn = rel === 'liked'
-    ? roomService.getRoomsLikedByUser
-    : roomService.getRoomsByCreator;
+  const relFunctions = {
+    creator: roomService.getRoomsByCreator,
+    liked: roomService.getRoomsLikedByUser,
+    friends: roomService.getRoomsOfFriends,
+  };
 
-  const rooms = await serviceFn(userid, limit, rawCursor);
+  // Query string should already be validated by prior middleware
+  /*
+    TODO: should not have to take on faith that the validation has run.
+    It should be *confirmed* here, either by:
+    - including additional error handling
+    - having the validation middleware attach PROPERLY TYPED output to request object
+  */
+  const rel = (req.query.rel?.toString() ?? 'creator') as keyof typeof relFunctions;
+
+  const serviceFn = relFunctions[rel];
+
+  const rooms = await serviceFn(userid, { limit, cursor });
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(rooms, baseUrl, limit, serializeTimestampCursor);

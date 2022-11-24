@@ -4,7 +4,10 @@ import Comment from '../models/Comment';
 import Like, { ILike } from '../models/Like';
 import Room, { IRoom } from '../models/Room';
 import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
+import {
+  deserializeTimestampCursor, getPaginatedQuery, PaginationInfo, RawPaginationInfo,
+} from '../utils/paginationHelpers';
+import { FriendshipRequestData, getFriendshipDocuments } from './friendshipService';
 
 interface RequiredRoomInputs {
   title: string;
@@ -33,7 +36,10 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
     .exec();
 }
 
-const getRooms = async (limit: number, rawCursor?: string) => {
+const getRooms = async ({
+  limit,
+  cursor: rawCursor,
+}: RawPaginationInfo) => {
   const cursor = deserializeTimestampCursor(rawCursor);
 
   const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
@@ -45,10 +51,44 @@ const getRooms = async (limit: number, rawCursor?: string) => {
   return Promise.all(rooms.map(getRoomDto));
 };
 
+// Get rooms where creator is a friend of given user
+// TODO: This query is extremely inefficient because it iterates over friend list for each room
+// It might even need to loop over every room???
+// No idea how to properly write this query...
+const getRoomsOfFriends = async (
+  userId: string,
+  { limit, cursor: rawCursor }: RawPaginationInfo,
+) => {
+  const friendshipData: FriendshipRequestData = {
+    userId,
+    status: 'ACCEPTED',
+    paginationParams: { limit: 500 },
+    populate: false,
+  };
+
+  const friends = await getFriendshipDocuments(friendshipData);
+
+  const friendIds = friends
+    .map((friend) => (friend.recipient.toString() === userId
+      ? friend.requester
+      : friend.recipient));
+
+  const cursor = deserializeTimestampCursor(rawCursor);
+  const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
+
+  const query = getPaginatedQuery(Room, paginationInfo, { creator: { $in: friendIds } });
+
+  const rooms = await completeQuery(query);
+
+  return Promise.all(rooms.map(getRoomDto));
+};
+
 const getRoomsByCreator = async (
   userId: string,
-  limit: number,
-  rawCursor?: string,
+  {
+    limit,
+    cursor: rawCursor,
+  }: RawPaginationInfo,
 ) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<IRoom> = { limit, cursor };
@@ -60,8 +100,10 @@ const getRoomsByCreator = async (
 
 const getRoomsLikedByUser = async (
   userId: string,
-  limit: number,
-  rawCursor?: string,
+  {
+    limit,
+    cursor: rawCursor,
+  }: RawPaginationInfo,
 ) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
@@ -123,5 +165,6 @@ export default {
   getRoomById,
   getRoomsByCreator,
   getRoomsLikedByUser,
+  getRoomsOfFriends,
   updateRoom,
 };
