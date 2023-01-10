@@ -1,8 +1,8 @@
 import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import Comment, { IComment } from '../models/Comment';
-import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
+import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
+import { deserializeTimestampCursor, PaginationInfo, RawPaginationInfo } from '../utils/paginationHelpers';
 
 type RequiredCommentInputs = {
   room: string,
@@ -16,7 +16,10 @@ function getCommentDto(comment: HydratedDocument<IComment>) {
   return commentDto as Dto['Comment'];
 }
 
-async function getCommentsByRoomId(roomid: string, limit: number, rawCursor?: any) {
+async function getCommentsByRoomId(
+  roomid: string,
+  { limit, cursor: rawCursor }: RawPaginationInfo,
+) {
   const cursor = deserializeTimestampCursor(rawCursor);
 
   const paginationInfo: PaginationInfo<IComment> = { limit, cursor };

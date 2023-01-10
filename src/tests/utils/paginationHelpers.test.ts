@@ -1,73 +1,57 @@
+import { URLSearchParams } from 'url';
 import {
   deserializeTimestampCursor,
   getNextLink,
   getPaginationLinks,
   getPaginationParams,
-  // eslint-disable-next-line @typescript-eslint/comma-dangle
-  serializeTimestampCursor
+  serializeTimestampCursor,
 } from '../../utils/paginationHelpers';
+
+function getQueryParams(url: string) {
+  return Object.fromEntries(
+    new URLSearchParams(url.split('?')[1]).entries(),
+  );
+}
 
 describe('getPaginationParams', () => {
   test('returns limit and cursor from Request\'s query params', () => {
     const limit = '30';
     const cursor = '12345';
-    const req = { query: { limit, cursor } };
+    const query = { limit, cursor };
 
-    expect(getPaginationParams(req, 1)).toEqual({ limit: 30, cursor: '12345' });
+    expect(getPaginationParams(query, 1)).toEqual({ limit: 30, cursor: '12345' });
   });
 
-  test('returns default limit if no limit is provided', () => {
-    const req = { query: {} };
+  test('returns fallback limit if no limit is provided', () => {
+    const query = {};
 
-    expect(getPaginationParams(req, 3).limit).toBe(3);
+    expect(getPaginationParams(query, 3).limit).toBe(3);
   });
 
   test('returns default limit if provided limit is not numeric', () => {
-    const req = { query: { limit: 'abc' } };
+    const query = { limit: 'abc' };
 
-    expect(getPaginationParams(req, 500).limit).toBe(500);
+    expect(getPaginationParams(query, 500).limit).toBe(500);
   });
 
-  test('returns undefined cursor if no cursor provided', () => {
-    const req = { query: {} };
+  test('returns null cursor if no cursor provided', () => {
+    const query = {};
 
-    expect(getPaginationParams(req, 0).cursor).toBeUndefined();
+    expect(getPaginationParams(query, 0).cursor).toBeNull();
   });
 });
 
 describe('getNextLink', () => {
-  test('returns expected result', () => {
-    const href = 'http://test.com/v1/resource?cursor=abcd1234&limit=20';
+  test('returns cursor and href with the query parameters included', () => {
     const url = 'http://test.com/v1/resource';
     const cursor = 'abcd1234';
     const limit = 20;
 
-    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor });
-  });
+    const result = getNextLink(url, cursor, limit);
 
-  test('undefined cursor is not included in query output', () => {
-    const url = 'http://test.com/v1/resource';
-    const href = 'http://test.com/v1/resource?limit=3';
+    expect(result.cursor).toEqual(cursor);
 
-    expect(getNextLink(url, undefined, 3)).toEqual({ href });
-  });
-
-  test('handles array-based cursor (of length 1)', () => {
-    const href = 'https://testing.com/resource?cursor=lmno&limit=5';
-    const url = 'https://testing.com/resource';
-    const cursor = ['lmno'];
-    const limit = 5;
-
-    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor: 'lmno' });
-  });
-
-  test('handles array-based cursor (of length >1)', () => {
-    const href = 'https://testing.com/resource?cursor=abcd%2C1234&limit=5';
-    const url = 'https://testing.com/resource';
-    const cursor = ['abcd', 1234];
-    const limit = 5;
-
-    expect(getNextLink(url, cursor, limit)).toEqual({ href, cursor: 'abcd,1234' });
+    expect(getQueryParams(result.href)).toEqual({ cursor: 'abcd1234', limit: '20' });
   });
 });
 
@@ -80,13 +64,14 @@ describe('getPaginationLinks', () => {
     ];
     const url = 'gopher://mysite.com/resource';
     const limit = 3;
-    const getCursor = (obj: any) => [obj.id, obj.createdAt];
+    const getCursor = (obj: any) => [obj.id, obj.createdAt].join(',');
 
-    expect(getPaginationLinks(data, url, limit, getCursor)).toEqual({
-      next: {
-        href: 'gopher://mysite.com/resource?cursor=2%2C2022-06-13T07%3A21%3A24.519Z&limit=3',
-        cursor: '2,2022-06-13T07:21:24.519Z',
-      },
+    const result = getPaginationLinks(data, url, limit, getCursor);
+
+    expect(result.next.cursor).toEqual('2,2022-06-13T07:21:24.519Z');
+    expect(getQueryParams(result.next.href)).toEqual({
+      cursor: decodeURIComponent('2%2C2022-06-13T07%3A21%3A24.519Z'),
+      limit: '3',
     });
   });
 
@@ -96,7 +81,7 @@ describe('getPaginationLinks', () => {
     ];
     const url = 'gopher://mysite.com';
     const limit = 3;
-    const getCursor = (obj: any) => [obj.createdAt];
+    const getCursor = (obj: any) => obj.createdAt;
 
     expect(getPaginationLinks(data, url, limit, getCursor)).toEqual({});
   });
@@ -107,15 +92,7 @@ describe('serializeTimestampCursor', () => {
     const createdAt = new Date();
     const id = 1234;
     const refObj = { createdAt, id };
-    const expectedOut = [createdAt.toISOString(), id];
-
-    expect(serializeTimestampCursor(refObj)).toEqual(expectedOut);
-  });
-
-  test('handles undefined id', () => {
-    const createdAt = new Date();
-    const refObj = { createdAt, id: undefined };
-    const expectedOut = [createdAt.toISOString(), undefined];
+    const expectedOut = [createdAt.toISOString(), id].map(encodeURIComponent).join();
 
     expect(serializeTimestampCursor(refObj)).toEqual(expectedOut);
   });
@@ -124,17 +101,17 @@ describe('serializeTimestampCursor', () => {
     const createdAt = '2022-06-13T07:21:24.517Z';
     const id = 1234;
     const refObj = { createdAt, id };
-    const expectedOut = [createdAt, id];
+    const expectedOut = [createdAt, id].map(encodeURIComponent).join();
 
     expect(serializeTimestampCursor(refObj)).toEqual(expectedOut);
   });
 
-  test('handles number date', () => {
+  test('handles numeric date', () => {
     const dateStr = '2022-06-13T07:21:24.517Z';
     const createdAt = new Date(dateStr).valueOf();
     const id = 1234;
     const refObj = { createdAt, id };
-    const expectedOut = [dateStr, id];
+    const expectedOut = [dateStr, id].map(encodeURIComponent).join();
 
     expect(serializeTimestampCursor(refObj)).toEqual(expectedOut);
   });
@@ -152,9 +129,9 @@ describe('deserializeTimestampCursor', () => {
   });
 
   test('handles undefined rawCursor', () => {
-    expect(deserializeTimestampCursor()).toEqual([
-      { field: 'createdAt', order: 'desc' },
-      { field: '_id' },
+    expect(deserializeTimestampCursor(null)).toEqual([
+      { field: 'createdAt', order: 'desc', value: null },
+      { field: '_id', value: null },
     ]);
   });
 

@@ -6,9 +6,9 @@ import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } fro
 
 const getCommentsByRoomId: RequestHandler = async (req, res) => {
   const { roomid } = req.params;
-  const { limit, cursor: rawCursor } = getPaginationParams(req, 5);
+  const { limit, cursor } = getPaginationParams(req.query, 5);
 
-  const comments = await commentService.getCommentsByRoomId(roomid, limit, rawCursor);
+  const comments = await commentService.getCommentsByRoomId(roomid, { limit, cursor });
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(comments, baseUrl, limit, serializeTimestampCursor);

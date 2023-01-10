@@ -1,18 +1,15 @@
 import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { FilterQuery, HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
-import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
+import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
+import { deserializeTimestampCursor, PaginationInfo, RawPaginationInfo } from '../utils/paginationHelpers';
 import { getUserDto } from './userService';
 
 export interface FriendshipRequestData {
   userId: string;
   userIsRecipient?: boolean;
   status?: 'ACCEPTED' | 'PENDING' | 'REJECTED';
-  paginationParams: {
-    limit: number;
-    cursor?: string;
-  };
+  paginationParams: RawPaginationInfo;
   populate?: boolean;
 }
 

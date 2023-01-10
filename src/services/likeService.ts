@@ -1,8 +1,8 @@
 import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import Like, { ILike } from '../models/Like';
-import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
-import { deserializeTimestampCursor, getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
+import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
+import { deserializeTimestampCursor, PaginationInfo, RawPaginationInfo } from '../utils/paginationHelpers';
 
 interface RequiredLikeInputs {
   user: string,
@@ -25,7 +25,7 @@ const createLike = async ({ user, room }: RequiredLikeInputs) => {
 };
 
 // TODO: Probably want to make a general "getLikes" service, with room OR user
-const getLikesByRoomId = async (room: string, limit: number, rawCursor?: string) => {
+const getLikesByRoomId = async (room: string, { limit, cursor: rawCursor }: RawPaginationInfo) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
   const query = getPaginatedQuery(Like, paginationInfo, { room });
@@ -34,7 +34,7 @@ const getLikesByRoomId = async (room: string, limit: number, rawCursor?: string)
   return likes.map(getLikeDto);
 };
 
-const getLikesByUserId = async (user: string, limit: number, rawCursor?: string) => {
+const getLikesByUserId = async (user: string, { limit, cursor: rawCursor }: RawPaginationInfo) => {
   const cursor = deserializeTimestampCursor(rawCursor);
   const paginationInfo: PaginationInfo<ILike> = { limit, cursor };
   const query = getPaginatedQuery(Like, paginationInfo, { user });

@@ -7,9 +7,9 @@ import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } fro
 
 const getLikesByRoomId: RequestHandler = async (req, res) => {
   const { roomid } = req.params;
-  const { limit, cursor } = getPaginationParams(req, 3);
+  const { limit, cursor } = getPaginationParams(req.query, 3);
 
-  const likes = await likeService.getLikesByRoomId(roomid, limit, cursor);
+  const likes = await likeService.getLikesByRoomId(roomid, { limit, cursor });
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(likes, baseUrl, limit, serializeTimestampCursor);
@@ -22,9 +22,9 @@ const getLikesByRoomId: RequestHandler = async (req, res) => {
 
 const getLikesByUserId: RequestHandler = async (req, res) => {
   const { userid } = req.params;
-  const { limit, cursor } = getPaginationParams(req, 3);
+  const { limit, cursor } = getPaginationParams(req.query, 3);
 
-  const likes = await likeService.getLikesByUserId(userid, limit, cursor);
+  const likes = await likeService.getLikesByUserId(userid, { limit, cursor });
 
   const baseUrl = getFullRequestUrl(req, false);
   const links = getPaginationLinks(likes, baseUrl, limit, serializeTimestampCursor);

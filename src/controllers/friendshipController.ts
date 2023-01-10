@@ -5,14 +5,10 @@ import { createErrorResponse } from '../utils/errorResponse';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
-// Doing a weird thing where I've got magic limits all over the place for no reason...
-// TODO: Remove magic number limits & extract all limits.
-const LOCAL_DEFAULT_LIMIT = 10;
-
 function getFriendshipRequestData(req: Request): FriendshipRequestData {
   const { userid } = req.params;
   const { is, status } = req.query;
-  const paginationParams = getPaginationParams(req, LOCAL_DEFAULT_LIMIT);
+  const paginationParams = getPaginationParams(req.query);
 
   return {
     userId: userid,

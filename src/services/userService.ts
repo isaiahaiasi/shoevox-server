@@ -3,8 +3,8 @@ import { HydratedDocument, Query } from 'mongoose';
 import FederatedCredential from '../models/FederatedCredential';
 import User, { IUser } from '../models/User';
 import { OauthCredentialData } from '../utils/auth';
-import { serializeDocument } from '../utils/mongooseHelpers';
-import { getPaginatedQuery, PaginationInfo } from '../utils/paginationHelpers';
+import { getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
+import { PaginationInfo, RawPaginationInfo } from '../utils/paginationHelpers';
 
 export function getUserDto(user: HydratedDocument<IUser>) {
   return serializeDocument(user, dtoFields.user) as Dto['User'];
@@ -16,7 +16,7 @@ function completeQuery<T, Q>(query: Query<T, Q>) {
     .exec();
 }
 
-const getUsers = async (limit: number, cursor?: string) => {
+const getUsers = async ({ limit, cursor }: RawPaginationInfo) => {
   const paginationInfo: PaginationInfo<IUser> = {
     limit,
     cursor: [{

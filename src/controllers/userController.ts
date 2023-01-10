@@ -6,14 +6,14 @@ import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams } from '../utils/paginationHelpers';
 
 const getUsers: RequestHandler = async (req, res) => {
-  const { limit, cursor } = getPaginationParams(req, 5);
+  const rawPaginationInfo = getPaginationParams(req.query, 5);
 
-  const users = await userService.getUsers(limit, cursor as string);
+  const users = await userService.getUsers(rawPaginationInfo);
 
   const links = getPaginationLinks(
     users,
     getFullRequestUrl(req, false),
-    limit,
+    rawPaginationInfo.limit,
     (user) => user.username,
   );
 

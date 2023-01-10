@@ -3,9 +3,9 @@ import { HydratedDocument, Query } from 'mongoose';
 import Comment from '../models/Comment';
 import Like, { ILike } from '../models/Like';
 import Room, { IRoom } from '../models/Room';
-import { filterObject, serializeDocument } from '../utils/mongooseHelpers';
+import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
 import {
-  deserializeTimestampCursor, getPaginatedQuery, PaginationInfo, RawPaginationInfo,
+  deserializeTimestampCursor, PaginationInfo, RawPaginationInfo,
 } from '../utils/paginationHelpers';
 import { FriendshipRequestData, getFriendshipDocuments } from './friendshipService';
 
@@ -62,7 +62,7 @@ const getRoomsOfFriends = async (
   const friendshipData: FriendshipRequestData = {
     userId,
     status: 'ACCEPTED',
-    paginationParams: { limit: 500 },
+    paginationParams: { limit: 500, cursor: null },
     populate: false,
   };
 

@@ -6,7 +6,7 @@ import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
 const getRooms: RequestHandler = async (req, res) => {
-  const { limit, cursor } = getPaginationParams(req, 3);
+  const { limit, cursor } = getPaginationParams(req.query, 3);
 
   const rooms = await roomService.getRooms({ limit, cursor });
 
@@ -20,7 +20,7 @@ const getRooms: RequestHandler = async (req, res) => {
 };
 
 const getRoomsByUserId: RequestHandler = async (req, res) => {
-  const { limit, cursor } = getPaginationParams(req, 3);
+  const { limit, cursor } = getPaginationParams(req.query, 3);
   const { userid } = req.params;
 
   const relFunctions = {
