@@ -1,66 +1,53 @@
 import { createGenericServerError, createNotImplementedError, createResourceNotFoundError } from '../../utils/errorResponse';
 
-// TODO?: Might need to rethink my approach to these tests,
-// This feels like too much knowledge of implementation is required.
-
 describe('createNotImplementedError', () => {
-  test('returns error object in expected shape', () => {
+  test('returns error with expected message', () => {
     const method = 'PATCH';
-    const fullPath = '/endpoint/to/fake/resource';
+    const originalUrl = '/endpoint/to/fake/resource';
 
-    const expectedError = {
-      status: 501,
-      msg: 'PATCH/endpoint/to/fake/resource has not been implemented yet!',
-    };
+    const expectedMsg = 'PATCH /endpoint/to/fake/resource has not been implemented yet!';
 
-    expect(createNotImplementedError({ method, fullPath })).toEqual(expectedError);
+    expect(
+      createNotImplementedError({ method, originalUrl }).message,
+    ).toEqual(expectedMsg);
   });
 });
 
 describe('createResourceNotFoundError', () => {
-  test('returns error object in expected shape', () => {
+  test('returns error with expected message', () => {
     const input = {
-      resource: 'USER',
-      fullPath: '/endpoint/fafefa',
-      identifier: 'bleh',
+      idName: 'USER',
+      originalUrl: '/endpoint/fafefa',
+      id: 'bleh',
     };
 
-    const expectedError = {
-      status: 404,
-      msg: 'Could not find USER bleh at /endpoint/fafefa',
-    };
+    // eslint-disable-next-line no-useless-escape
+    const expectedMsg = 'Could not find USER \"bleh\" at /endpoint/fafefa';
 
-    expect(createResourceNotFoundError(input)).toEqual(expectedError);
+    expect(createResourceNotFoundError(input).message).toEqual(expectedMsg);
   });
 });
 
 describe('createGenericServerError', () => {
-  test('returns error object in expected shape (given identifier)', () => {
+  test('returns error with expected message (given identifier)', () => {
     const input = Object.freeze({
       method: 'GET',
-      resource: 'COMMENT',
-      identifier: 'abc',
+      idName: 'COMMENT',
+      id: 'abc',
     });
 
-    const expectedError = {
-      status: 500,
-      msg: 'Could not GET COMMENT abc',
-    };
-
-    expect(createGenericServerError(input)).toEqual(expectedError);
+    const expectedMsg = 'Could not GET COMMENT abc';
+    expect(createGenericServerError(input).message).toEqual(expectedMsg);
   });
 
-  test('returns error object in expected shape (no identifier)', () => {
+  test('returns error with expected message (no identifier)', () => {
     const input = Object.freeze({
       method: 'POST',
-      resource: 'doggo',
+      idName: 'doggo',
     });
 
-    const expectedError = {
-      status: 500,
-      msg: 'Could not POST doggo',
-    };
+    const expectedMsg = 'Could not POST doggo';
 
-    expect(createGenericServerError(input)).toEqual(expectedError);
+    expect(createGenericServerError(input).message).toEqual(expectedMsg);
   });
 });

@@ -1,40 +1,40 @@
 import { MethodUppercase } from './typeHelpers';
 
 interface NotImplementedErrorParams {
-  method: MethodUppercase ;
-  fullPath: string;
+  method: MethodUppercase;
+  originalUrl: string;
 }
 
 interface ResourceNotFoundErrorParams {
-  fullPath: string;
-  resource: string;
-  identifier: string;
+  originalUrl: string;
+  idName: string;
+  id?: string;
 }
 
 interface GenericServerErrorParams {
   method: MethodUppercase;
-  resource: string;
-  identifier?: string;
+  idName: string;
+  id?: string;
 }
 
-export function createNotImplementedError({ method, fullPath }: NotImplementedErrorParams) {
-  return { status: 501, msg: `${method}${fullPath} has not been implemented yet!` };
+export function createNotImplementedError({ method, originalUrl }: NotImplementedErrorParams) {
+  return new Error(`${method} ${originalUrl} has not been implemented yet!`);
 }
 
 export function createResourceNotFoundError(
-  { fullPath, resource, identifier }: ResourceNotFoundErrorParams,
+  { originalUrl, id, idName }: ResourceNotFoundErrorParams,
 ) {
-  return { status: 404, msg: `Could not find ${resource} ${identifier} at ${fullPath}` };
+  return new Error(`Could not find ${idName} "${id}" at ${originalUrl}`);
 }
 
 export function createGenericServerError(
-  { method, resource, identifier }: GenericServerErrorParams,
+  { method, idName, id }: GenericServerErrorParams,
 ) {
-  const msg = identifier
-    ? `Could not ${method} ${resource} ${identifier}`
-    : `Could not ${method} ${resource}`;
+  const msg = id
+    ? `Could not ${method} ${idName} ${id}`
+    : `Could not ${method} ${idName}`;
 
-  return { status: 500, msg };
+  return new Error(msg);
 }
 
 // TODO: proper typing

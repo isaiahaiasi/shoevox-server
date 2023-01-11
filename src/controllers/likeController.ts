@@ -1,39 +1,18 @@
 import { RequestHandler } from 'express';
 import { authenticateUser } from '../middleware/authHandlers';
 import likeService from '../services/likeService';
+import { paginatedGetByIdentifierQueryHandler } from '../utils/controllerFactories';
 import { createErrorResponse } from '../utils/errorResponse';
-import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
 
-const getLikesByRoomId: RequestHandler = async (req, res) => {
-  const { roomid } = req.params;
-  const { limit, cursor } = getPaginationParams(req.query, 3);
+const getLikesByRoomId = paginatedGetByIdentifierQueryHandler(
+  'roomid',
+  likeService.getLikesByRoomId,
+);
 
-  const likes = await likeService.getLikesByRoomId(roomid, { limit, cursor });
-
-  const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(likes, baseUrl, limit, serializeTimestampCursor);
-
-  res.json({
-    data: likes,
-    links,
-  });
-};
-
-const getLikesByUserId: RequestHandler = async (req, res) => {
-  const { userid } = req.params;
-  const { limit, cursor } = getPaginationParams(req.query, 3);
-
-  const likes = await likeService.getLikesByUserId(userid, { limit, cursor });
-
-  const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(likes, baseUrl, limit, serializeTimestampCursor);
-
-  res.json({
-    data: likes,
-    links,
-  });
-};
+const getLikesByUserId = paginatedGetByIdentifierQueryHandler(
+  'userid',
+  likeService.getLikesByRoomId,
+);
 
 const getLike: RequestHandler = async (req, res) => {
   const { roomid, userid } = req.params;

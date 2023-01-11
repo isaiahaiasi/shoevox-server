@@ -1,24 +1,12 @@
 import { RequestHandler } from 'express';
 import { authenticateUser } from '../middleware/authHandlers';
 import commentService from '../services/commentService';
-import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
+import { paginatedGetByIdentifierQueryHandler } from '../utils/controllerFactories';
 
-const getCommentsByRoomId: RequestHandler = async (req, res) => {
-  const { roomid } = req.params;
-  const { limit, cursor } = getPaginationParams(req.query, 5);
-
-  const comments = await commentService.getCommentsByRoomId(roomid, { limit, cursor });
-
-  const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(comments, baseUrl, limit, serializeTimestampCursor);
-
-  res.json({
-    count: comments.length,
-    data: comments,
-    links,
-  });
-};
+const getCommentsByRoomId = paginatedGetByIdentifierQueryHandler(
+  'roomid',
+  commentService.getCommentsByRoomId,
+);
 
 const createCommentHandler: RequestHandler = async (req, res) => {
   if (!req.user) {

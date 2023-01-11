@@ -6,8 +6,9 @@ import { MethodUppercase } from '../utils/typeHelpers';
 const getStatusCode = (err: any) => err.status ?? err.statusCode ?? 500;
 
 export const notImplementedHandler: RequestHandler = (req, res, next) => {
-  const { method, originalUrl: fullPath } = req;
-  const err = createNotImplementedError({ method: method as MethodUppercase, fullPath });
+  const { method, originalUrl } = req;
+  res.status(501);
+  const err = createNotImplementedError({ method: method as MethodUppercase, originalUrl });
   next(err);
 };
 

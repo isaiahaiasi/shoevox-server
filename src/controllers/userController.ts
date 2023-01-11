@@ -1,10 +1,12 @@
 import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
 import userService from '../services/userService';
-import { createResourceNotFoundError } from '../utils/errorResponse';
+import { serviceWithIdentifierQueryHandler } from '../utils/controllerFactories';
 import { getFullRequestUrl } from '../utils/expressHelpers';
 import { getPaginationLinks, getPaginationParams } from '../utils/paginationHelpers';
 
+// TODO: this doesn't use the normal timestamp cursor
+// ...so, not sure how to extract to generalizable function...
 const getUsers: RequestHandler = async (req, res) => {
   const rawPaginationInfo = getPaginationParams(req.query, 5);
 
@@ -23,19 +25,7 @@ const getUsers: RequestHandler = async (req, res) => {
   });
 };
 
-const getUserById: RequestHandler = async (req, res, next) => {
-  const { userid } = req.params;
-
-  const user = await userService.getUserById(userid);
-
-  if (user) {
-    res.json({ data: user });
-  } else {
-    next(createResourceNotFoundError(
-      { resource: 'user', identifier: userid, fullPath: req.originalUrl },
-    ));
-  }
-};
+const getUserById = serviceWithIdentifierQueryHandler('userid', userService.getUserById);
 
 const deleteUserHandler: RequestHandler = async (req, res) => {
   const { userid } = req.params;

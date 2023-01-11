@@ -1,28 +1,11 @@
 import { RequestHandler } from 'express';
 import { authenticateUser, authorizeSameUser } from '../middleware/authHandlers';
 import roomService from '../services/roomService';
-import { createResourceNotFoundError } from '../utils/errorResponse';
-import { getFullRequestUrl } from '../utils/expressHelpers';
-import { getPaginationLinks, getPaginationParams, serializeTimestampCursor } from '../utils/paginationHelpers';
+import { paginatedGetByIdentifierQueryHandler, paginatedGetQueryHandler, serviceWithIdentifierQueryHandler } from '../utils/controllerFactories';
 
-const getRooms: RequestHandler = async (req, res) => {
-  const { limit, cursor } = getPaginationParams(req.query, 3);
+const getRooms = paginatedGetQueryHandler(roomService.getRooms);
 
-  const rooms = await roomService.getRooms({ limit, cursor });
-
-  const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(rooms, baseUrl, limit, serializeTimestampCursor);
-
-  res.json({
-    data: rooms,
-    links,
-  });
-};
-
-const getRoomsByUserId: RequestHandler = async (req, res) => {
-  const { limit, cursor } = getPaginationParams(req.query, 3);
-  const { userid } = req.params;
-
+const getRoomsByUserId: RequestHandler = async (req, res, next) => {
   const relFunctions = {
     creator: roomService.getRoomsByCreator,
     liked: roomService.getRoomsLikedByUser,
@@ -30,41 +13,15 @@ const getRoomsByUserId: RequestHandler = async (req, res) => {
   };
 
   // Query string should already be validated by prior middleware
-  /*
-    TODO: should not have to take on faith that the validation has run.
-    It should be *confirmed* here, either by:
-    - including additional error handling
-    - having the validation middleware attach PROPERLY TYPED output to request object
-  */
+  // TODO: don't like taking it on faith that the validation has run.
   const rel = (req.query.rel?.toString() ?? 'creator') as keyof typeof relFunctions;
 
   const serviceFn = relFunctions[rel];
 
-  const rooms = await serviceFn(userid, { limit, cursor });
-
-  const baseUrl = getFullRequestUrl(req, false);
-  const links = getPaginationLinks(rooms, baseUrl, limit, serializeTimestampCursor);
-
-  res.json({
-    data: rooms,
-    links,
-  });
+  paginatedGetByIdentifierQueryHandler('userid', serviceFn)(req, res, next);
 };
 
-const getRoomById: RequestHandler = async (req, res, next) => {
-  const { roomid } = req.params;
-  const room = await roomService.getRoomById(roomid);
-
-  if (room) {
-    res.json({ data: room });
-  } else {
-    const { originalUrl: fullPath } = req;
-    const resource = 'room';
-    next(
-      createResourceNotFoundError({ resource, identifier: roomid, fullPath }),
-    );
-  }
-};
+const getRoomById = serviceWithIdentifierQueryHandler('roomid', roomService.getRoomById);
 
 const createRoomHandler: RequestHandler = async (req, res) => {
   if (!req.user) {
