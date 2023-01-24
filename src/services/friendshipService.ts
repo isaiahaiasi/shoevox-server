@@ -1,4 +1,4 @@
-import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
+import { Resource, resourceFields } from '@isaiahaiasi/voxelatlas-spec';
 import { FilterQuery, HydratedDocument } from 'mongoose';
 import Friendship, { IFriendship } from '../models/Friendship';
 import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
@@ -13,13 +13,14 @@ export interface FriendshipRequestData {
   populate?: boolean;
 }
 
+// TODO: Generalize
 function getFriendshipDto(friendship: HydratedDocument<IFriendship>) {
-  const friendshipDto = serializeDocument(friendship, dtoFields.friendship);
+  const friendshipDto = serializeDocument(friendship, resourceFields.friendship);
 
-  friendshipDto.recipient = filterObject(friendshipDto.recipient, dtoFields.user);
-  friendshipDto.requester = filterObject(friendshipDto.requester, dtoFields.user);
+  friendshipDto.recipient = filterObject(friendshipDto.recipient, resourceFields.user);
+  friendshipDto.requester = filterObject(friendshipDto.requester, resourceFields.user);
 
-  return friendshipDto as Dto['Friendship'];
+  return friendshipDto as Resource['Friendship'];
 }
 
 export async function getFriendshipDocuments(friendshipData: FriendshipRequestData) {

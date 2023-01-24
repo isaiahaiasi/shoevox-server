@@ -1,4 +1,4 @@
-import { Dto } from '@isaiahaiasi/voxelatlas-spec';
+import { Resource } from '@isaiahaiasi/voxelatlas-spec';
 import { RequestHandler } from 'express';
 import { createResourceNotFoundError } from './errorResponse';
 import { getFullRequestUrl } from './expressHelpers';
@@ -6,19 +6,19 @@ import {
   getPaginationLinks, getPaginationParams, RawPaginationInfo, serializeTimestampCursor,
 } from './paginationHelpers';
 
-interface PaginatedService<T extends keyof Dto> {
-  (paginationInfo: RawPaginationInfo): Promise<Dto[T][]>
+interface PaginatedService<T extends keyof Resource> {
+  (paginationInfo: RawPaginationInfo): Promise<Resource[T][]>
 }
 
-interface PaginatedServiceWithIdentifier<T extends keyof Dto> {
-  (identifier: string, paginationInfo: RawPaginationInfo): Promise<Dto[T][]>
+interface PaginatedServiceWithIdentifier<T extends keyof Resource> {
+  (identifier: string, paginationInfo: RawPaginationInfo): Promise<Resource[T][]>
 }
 
-interface ServiceWithIdentifier<T extends keyof Dto> {
-  (identifier: string): Promise<Dto[T] | null>
+interface ServiceWithIdentifier<T extends keyof Resource> {
+  (identifier: string): Promise<Resource[T] | null>
 }
 
-export function serviceWithIdentifierQueryHandler<T extends keyof Dto>(
+export function serviceWithIdentifierQueryHandler<T extends keyof Resource>(
   idName: string,
   serviceFn: ServiceWithIdentifier<T>,
 ): RequestHandler {
@@ -38,7 +38,7 @@ export function serviceWithIdentifierQueryHandler<T extends keyof Dto>(
   };
 }
 
-export function paginatedGetQueryHandler<T extends keyof Dto>(
+export function paginatedGetQueryHandler<T extends keyof Resource>(
   serviceFn: PaginatedService<T>,
 ): RequestHandler {
   return async (req, res) => {
@@ -57,7 +57,7 @@ export function paginatedGetQueryHandler<T extends keyof Dto>(
   };
 }
 
-export function paginatedGetByIdentifierQueryHandler<T extends keyof Dto>(
+export function paginatedGetByIdentifierQueryHandler<T extends keyof Resource>(
   identifier: string,
   serviceFn: PaginatedServiceWithIdentifier<T>,
 ): RequestHandler {

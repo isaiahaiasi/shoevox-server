@@ -1,4 +1,4 @@
-import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
+import { Resource, resourceFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import Like, { ILike } from '../models/Like';
 import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
@@ -10,9 +10,9 @@ interface RequiredLikeInputs {
 }
 
 function getLikeDto(like: HydratedDocument<ILike>) {
-  const likeDto = serializeDocument(like, dtoFields.like);
-  likeDto.user = filterObject(likeDto.user, dtoFields.user);
-  return likeDto as Dto['Like'];
+  const likeDto = serializeDocument(like, resourceFields.like);
+  likeDto.user = filterObject(likeDto.user, resourceFields.user);
+  return likeDto as Resource['Like'];
 }
 
 const createLike = async ({ user, room }: RequiredLikeInputs) => {

@@ -1,4 +1,4 @@
-import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
+import { Resource, resourceFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
 import Comment from '../models/Comment';
 import Like, { ILike } from '../models/Like';
@@ -15,7 +15,7 @@ interface RequiredRoomInputs {
 }
 
 async function getRoomDto(room: HydratedDocument<IRoom>) {
-  const roomDto = serializeDocument(room, dtoFields.room);
+  const roomDto = serializeDocument(room, resourceFields.room);
 
   const [likeCount, commentCount] = await Promise.all([
     Like.countDocuments({ room: roomDto.id }).exec(),
@@ -24,14 +24,14 @@ async function getRoomDto(room: HydratedDocument<IRoom>) {
 
   roomDto.likeCount = likeCount;
   roomDto.commentCount = commentCount;
-  roomDto.creator = filterObject(roomDto.creator, dtoFields.user);
+  roomDto.creator = filterObject(roomDto.creator, resourceFields.user);
 
-  return roomDto as Dto['Room'];
+  return roomDto as Resource['Room'];
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
   return query
-    .select(dtoFields.room.join(' '))
+    .select(resourceFields.room.join(' '))
     .populate('creator')
     .exec();
 }

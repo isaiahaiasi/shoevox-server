@@ -13,11 +13,11 @@ describe('routeBuilder', () => {
     const controller = {
       operation1: jest.fn(),
     };
-    const routeDescription = {
-      '/': {
-        get: {
-          operationId: 'operation1',
-        },
+
+    const routeDescription: RouteData<'operation1'> = {
+      operation1: {
+        method: 'get',
+        path: '/',
       },
     };
 
@@ -33,10 +33,9 @@ describe('routeBuilder', () => {
       operation1: jest.fn(),
     };
     const routeDescription: RouteData<'operation1'> = {
-      '/': {
-        get: {
-          operationId: 'operation1',
-        },
+      operation1: {
+        method: 'get',
+        path: '/',
       },
     };
 
@@ -54,11 +53,10 @@ describe('routeBuilder', () => {
   // especially if I generate routes from OpenAPI doc, in which case the typings are irrelevant.
   test('Route is not added if [operationId] is not implemented on Controller', () => {
     const controller = {};
-    const routeDescription = {
-      '/nothandledyet': {
-        patch: {
-          operationId: 'handleNotHandledYet',
-        },
+    const routeDescription: RouteData<'handleNotHandledYet'> = {
+      handleNotHandledYet: {
+        method: 'patch',
+        path: '/nothandledyet',
       },
     };
 

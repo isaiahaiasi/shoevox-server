@@ -1,4 +1,4 @@
-import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
+import { Resource, resourceFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument, Query } from 'mongoose';
 import FederatedCredential from '../models/FederatedCredential';
 import User, { IUser } from '../models/User';
@@ -7,12 +7,12 @@ import { getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
 import { PaginationInfo, RawPaginationInfo } from '../utils/paginationHelpers';
 
 export function getUserDto(user: HydratedDocument<IUser>) {
-  return serializeDocument(user, dtoFields.user) as Dto['User'];
+  return serializeDocument(user, resourceFields.user) as Resource['User'];
 }
 
 function completeQuery<T, Q>(query: Query<T, Q>) {
   return query
-    .select(dtoFields.user.join(' '))
+    .select(resourceFields.user.join(' '))
     .exec();
 }
 
@@ -92,7 +92,7 @@ const getOrCreateUserByCredentials = async ({
   provider,
   displayName,
   email,
-}: OauthCredentialData): Promise<Dto['User']> => {
+}: OauthCredentialData): Promise<Resource['User']> => {
   const existingCredentials = await FederatedCredential.findOne({ provider, oauthId }).exec();
 
   // If credentials already exist, return the associated user.

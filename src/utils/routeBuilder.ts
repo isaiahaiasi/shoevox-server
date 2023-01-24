@@ -1,57 +1,44 @@
-import { apiSpec, OperationId } from '@isaiahaiasi/voxelatlas-spec';
+import { operations, OperationId } from '@isaiahaiasi/voxelatlas-spec';
+import { HttpMethod } from '@isaiahaiasi/voxelatlas-spec/public/commonTypes';
 import { requests } from '@isaiahaiasi/voxelatlas-spec/public/zSchemas';
 import { RequestHandler, Router } from 'express';
 import { validate } from '../middleware/validators';
-import { getCleanPathsObject } from './apiSpecHelpers';
 import { wrapController } from './controllerWrapper';
-import { Method } from './typeHelpers';
 
 export interface Controller {
   [key: string]: RequestHandler | RequestHandler[]
 }
 
-export interface RouteData<OpId> {
-  [key: string]: {
-    [key in Method]?: {
-      operationId: OpId
-    }
-  }
+interface OperationInfo {
+  method: HttpMethod
+  path: string;
 }
 
-type MapRouteDataCallback<T extends Controller> = (
-  path: string,
-  method: Method,
-  operationId: keyof T,
-) => void;
-
-function mapRouteData<O extends string, T extends Controller>(
-  routes: RouteData<O>,
-  fn: MapRouteDataCallback<T>,
-) {
-  Object.entries(routes).forEach(([path, methods]) => {
-    Object.entries(methods).forEach(([method, { operationId }]) => {
-      fn(path, method as Method, operationId);
-    });
-  });
-}
+export type RouteData<OpId extends string> = {
+  [K in OpId]: OperationInfo;
+};
 
 /**
  * Takes a route data object and a Controller group and creates a route.
  * Wraps controllers so that thrown errors are passed to express error handlers.
  */
-export function getRouterFromRouteData<O extends string, T extends Controller>(
+export function getRouterFromRouteData<O extends string>(
   routeData: RouteData<O>,
-  controller: T,
+  controller: Controller,
 ) {
   const router = Router();
 
-  mapRouteData(routeData, (path, method, operationId) => {
+  Object.entries(routeData).forEach(([operationId, operationInfo]) => {
+    const { method, path } = operationInfo as OperationInfo;
+
     let requestHandler = controller[operationId];
 
     if (!requestHandler) {
+      console.warn(`NOT IMPLEMENTED: ${operationId}`);
       return;
     }
 
+    // If there's a zod schema for the incoming request preface controller with validator middleware
     const validationSchema = requests[operationId as OperationId];
 
     if (validationSchema) {
@@ -69,6 +56,5 @@ export function getRouterFromRouteData<O extends string, T extends Controller>(
 }
 
 export function getOpenApiRouter(controller: Controller) {
-  const paths = getCleanPathsObject(apiSpec.paths);
-  return getRouterFromRouteData<OperationId, typeof controller>(paths, controller);
+  return getRouterFromRouteData<OperationId>(operations, controller);
 }

@@ -1,7 +1,7 @@
-import { MethodUppercase } from './typeHelpers';
+import { HttpMethod } from '@isaiahaiasi/voxelatlas-spec/public/commonTypes';
 
 interface NotImplementedErrorParams {
-  method: MethodUppercase;
+  method: Uppercase<HttpMethod>;
   originalUrl: string;
 }
 
@@ -12,7 +12,7 @@ interface ResourceNotFoundErrorParams {
 }
 
 interface GenericServerErrorParams {
-  method: MethodUppercase;
+  method: Uppercase<HttpMethod>;
   idName: string;
   id?: string;
 }

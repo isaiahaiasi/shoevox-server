@@ -1,4 +1,4 @@
-import { Dto, dtoFields } from '@isaiahaiasi/voxelatlas-spec';
+import { Resource, resourceFields } from '@isaiahaiasi/voxelatlas-spec';
 import { HydratedDocument } from 'mongoose';
 import Comment, { IComment } from '../models/Comment';
 import { filterObject, getPaginatedQuery, serializeDocument } from '../utils/mongooseHelpers';
@@ -10,10 +10,10 @@ type RequiredCommentInputs = {
   content: string,
 };
 
-function getCommentDto(comment: HydratedDocument<IComment>) {
-  const commentDto = serializeDocument(comment, dtoFields.comment);
-  commentDto.user = filterObject(commentDto.user, dtoFields.user);
-  return commentDto as Dto['Comment'];
+function getCommentResource(comment: HydratedDocument<IComment>) {
+  const commentDto = serializeDocument(comment, resourceFields.comment);
+  commentDto.user = filterObject(commentDto.user, resourceFields.user);
+  return commentDto as Resource['Comment'];
 }
 
 async function getCommentsByRoomId(
@@ -27,11 +27,11 @@ async function getCommentsByRoomId(
   const query = getPaginatedQuery(Comment, paginationInfo, { room: roomid });
 
   const comments = await query
-    .select(dtoFields.comment.join(' '))
+    .select(resourceFields.comment.join(' '))
     .populate('user')
     .exec();
 
-  return comments.map(getCommentDto);
+  return comments.map(getCommentResource);
 }
 
 async function createComment({ room, user, content }: RequiredCommentInputs) {
@@ -39,7 +39,7 @@ async function createComment({ room, user, content }: RequiredCommentInputs) {
     .save()
     .then((res) => res.populate('user'));
 
-  return getCommentDto(comment);
+  return getCommentResource(comment);
 }
 
 async function deleteComment(commentId: string, userId: string) {
@@ -50,7 +50,7 @@ async function deleteComment(commentId: string, userId: string) {
     throw Error(`Could not find Comment with id ${commentId} to delete!`);
   }
 
-  return getCommentDto(deletedComment);
+  return getCommentResource(deletedComment);
 }
 
 export default {

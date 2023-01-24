@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { HttpMethod } from '@isaiahaiasi/voxelatlas-spec/public/commonTypes';
 import { ErrorRequestHandler, RequestHandler } from 'express';
 import { createErrorResponse, createNotImplementedError } from '../utils/errorResponse';
-import { MethodUppercase } from '../utils/typeHelpers';
 
 const getStatusCode = (err: any) => err.status ?? err.statusCode ?? 500;
 
 export const notImplementedHandler: RequestHandler = (req, res, next) => {
   const { method, originalUrl } = req;
   res.status(501);
-  const err = createNotImplementedError({ method: method as MethodUppercase, originalUrl });
+  const err = createNotImplementedError({ method: method as Uppercase<HttpMethod>, originalUrl });
   next(err);
 };
 
