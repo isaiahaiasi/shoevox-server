@@ -4,6 +4,7 @@ import express from 'express';
 import helmet from 'helmet';
 import session from 'express-session';
 import passport from 'passport';
+import morgan from 'morgan';
 import { getEnv } from './config/env';
 import { initializeMongoose } from './config/mongooseConfig';
 import { getErrorHandlers } from './middleware/errorHandlers';
@@ -14,7 +15,6 @@ const env = getEnv();
 
 const app = express();
 
-// TODO: Logging
 // TODO: Sanitization?
 
 // Establish connection with DB
@@ -59,6 +59,9 @@ app.use(cors({
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // allow session cookie from browser to pass through
 }));
+
+// Logging
+app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 
 // Include routes
 app.use('/v1', router);
